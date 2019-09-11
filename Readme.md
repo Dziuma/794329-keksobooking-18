@@ -1,8 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Oleksandr Dziuma](https://up.htmlacademy.ru/javascript/18/user/794329).
-* Наставник: `Неизвестно`.
-
+* Наставник: [Роман Макаров](https://htmlacademy.ru/profile/deepspiral).
 ---
 
 _Не удаляйте и не обращайте внимание на файлы:_<br>
