@@ -39,17 +39,22 @@ var OFFER_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
-var LOCATION_X_COORDS = [150, 250, 350, 450, 550, 650, 750, 850];
-var LOCATION_Y_COORDS = [190, 340, 270, 440, 220, 380, 320, 500];
-var AMOUNT_OF_MESSAGES = 8;
+var LOCATION_X_START = 150;
+var LOCATION_X_END = 850;
+var LOCATION_Y_START = 130;
+var LOCATION_Y_END = 630;
+var AMOUNT_OF_MOCKS = 8;
 var PIN_HALF_WIDTH = 25;
 var PIN_HEIGHT = 70;
-var mocks = [];
 var fragment = document.createDocumentFragment();
 var pins = document.querySelector('.map__pins');
 var template = document.querySelector('#pin')
 .content
 .querySelector('.map__pin');
+
+var getRandomNumber = function (from, to) {
+  return Math.floor(Math.random() * (to - from + 1) + from);
+};
 
 var getRandomArrayIndex = function (array) {
   return Math.floor(Math.random() * array.length);
@@ -64,94 +69,94 @@ var getRandomAmountOfArrayElements = function (array) {
   return Math.ceil(Math.random() * array.length);
 };
 
-var mixArray = function (array) {
-  var newArray = array.slice(0);
-  for (var i = 0; i < array.length; i += 1) {
-    var randomArrayIndex = getRandomArrayIndex(newArray);
-    var mixedElement = newArray.splice(randomArrayIndex, 1);
-    randomArrayIndex = getRandomArrayIndex(array);
-    newArray.splice(randomArrayIndex, 0, mixedElement);
+var shuffleArray = function (array) {
+  var newArray = array.slice();
+  var j;
+  var temp;
+  for (var i = newArray.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    temp = newArray[j];
+    newArray[j] = newArray[i];
+    newArray[i] = temp;
   }
   return newArray;
 };
 
-var generateRandomAmountOfArrayElements = function (array) {
-  var mixedArray = mixArray(array);
+var generateRandomLengthArray = function (array) {
+  var shuffledArray = shuffleArray(array);
   var amountOfElements = getRandomAmountOfArrayElements(array);
-  return mixedArray.slice(0, amountOfElements);
+  return shuffledArray.slice(0, amountOfElements);
+};
+
+var getLocationXCoords = function () {
+  return getRandomNumber(LOCATION_X_START, LOCATION_X_END);
+};
+
+var getLocationYCoords = function () {
+  return getRandomNumber(LOCATION_Y_START, LOCATION_Y_END);
 };
 
 var generateMocks = function () {
-  var messages = [];
-  for (var i = 0; i < AMOUNT_OF_MESSAGES; i += 1) {
-    var messageInfo = {
+  var mocks = [];
+  var getRoomsCount = function (offerType) {
+    var ROOMS_COUNT = {
+      bungalo: 1,
+      house: 2,
+      flat: 3,
+      palace: 100
+    };
+    var buildingType = Object.keys(ROOMS_COUNT);
+    buildingType.forEach(function (type) {
+      if (type === offerType) {
+        var rooms = ROOMS_COUNT[type];
+      }
+      return rooms;
+    });
+  };
+  var getGuestsCount = function (offerType) {
+    var GUESTS_COUNT = {
+      bungalo: 1,
+      house: 2,
+      flat: 3,
+      palace: 0
+    };
+    var buildingType = Object.keys(GUESTS_COUNT);
+    buildingType.forEach(function (type) {
+      if (type === offerType) {
+        var guests = GUESTS_COUNT[type];
+      }
+      return guests;
+    });
+  };
+  for (var i = 0; i < AMOUNT_OF_MOCKS; i += 1) {
+    var pinXCoord = getLocationXCoords();
+    var pinYCoord = getLocationYCoords();
+    var offerType = getRandomArrayElement(OFFER_TYPES);
+    var offerCheckin = getRandomArrayElement(OFFER_CHECKINS);
+    var mock = {
       'author': {
-        'avatar': null
+        'avatar': AVATARS[i]
       },
       'offer': {
-        'title': null,
-        'address': null,
-        'price': null,
-        'type': null,
-        'rooms': null,
-        'guests': null,
-        'checkin': null,
-        'checkout': null,
-        'features': null,
-        'description': null,
-        'photos': null
+        'title': OFFER_TITLES[i],
+        'address': pinXCoord + ', ' + pinYCoord,
+        'price': getRandomArrayElement(OFFER_PRICES),
+        'type': offerType,
+        'rooms': getRoomsCount(offerType),
+        'guests': getGuestsCount(offerType),
+        'checkin': offerCheckin,
+        'checkout': offerCheckin,
+        'features': generateRandomLengthArray(OFFER_FEATURES),
+        'description': OFFER_DESCRIPTIONS[i],
+        'photos': generateRandomLengthArray(OFFER_PHOTOS)
       },
       'location': {
-        'x': null,
-        'y': null
+        'x': pinXCoord,
+        'y': pinYCoord
       }
     };
-    var rooms;
-    var guests;
-    messageInfo.author.avatar = AVATARS[i];
-    messageInfo.offer.title = OFFER_TITLES[i];
-    messageInfo.offer.address = LOCATION_X_COORDS[i] + ', ' + LOCATION_Y_COORDS[i];
-    messageInfo.offer.price = getRandomArrayElement(OFFER_PRICES);
-    messageInfo.offer.type = getRandomArrayElement(OFFER_TYPES);
-    switch (messageInfo.offer.type) {
-      case 'bungalo':
-        rooms = 1;
-        break;
-      case 'house':
-        rooms = 2;
-        break;
-      case 'flat':
-        rooms = 3;
-        break;
-      case 'palace':
-        rooms = 100;
-    }
-    messageInfo.offer.rooms = rooms;
-    switch (messageInfo.offer.type) {
-      case 'bungalo':
-        guests = 1;
-        break;
-      case 'house':
-        guests = 2;
-        break;
-      case 'flat':
-        guests = 3;
-        break;
-      case 'palace':
-        guests = 0;
-    }
-    messageInfo.offer.guests = guests;
-    messageInfo.offer.checkin = getRandomArrayElement(OFFER_CHECKINS);
-    messageInfo.offer.checkout = messageInfo.offer.checkin;
-    messageInfo.offer.features = generateRandomAmountOfArrayElements(OFFER_FEATURES);
-    messageInfo.offer.description = OFFER_DESCRIPTIONS[i];
-    messageInfo.offer.photos = generateRandomAmountOfArrayElements(OFFER_PHOTOS);
-    messageInfo.location.x = LOCATION_X_COORDS[i];
-    messageInfo.location.y = LOCATION_Y_COORDS[i];
-    messages.push(messageInfo);
+    mocks.push(mock);
   }
-
-  mocks = messages;
   return mocks;
 };
 
@@ -166,9 +171,10 @@ var createPin = function (mock) {
 };
 
 var renderPins = function () {
-  for (var i = 0; i < mocks.length; i += 1) {
-    fragment.appendChild(createPin(mocks[i]));
-  }
+  var mocks = generateMocks();
+  mocks.forEach(function (mock) {
+    fragment.appendChild(createPin(mock));
+  });
   pins.appendChild(fragment);
 };
 
