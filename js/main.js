@@ -43,7 +43,6 @@ var LOCATION_X_START = 150;
 var LOCATION_X_END = 850;
 var LOCATION_Y_START = 130;
 var LOCATION_Y_END = 630;
-var AMOUNT_OF_MOCKS = 8;
 var PIN_HALF_WIDTH = 25;
 var PIN_HEIGHT = 70;
 var fragment = document.createDocumentFragment();
@@ -56,28 +55,24 @@ var getRandomNumber = function (from, to) {
   return Math.floor(Math.random() * (to - from + 1) + from);
 };
 
-var getRandomArrayIndex = function (array) {
-  return Math.floor(Math.random() * array.length);
-};
-
 var getRandomArrayElement = function (array) {
-  var randomArrayIndex = getRandomArrayIndex(array);
+  var randomArrayIndex = getRandomNumber(0, array.length - 1);
   return array[randomArrayIndex];
 };
 
 var getRandomAmountOfArrayElements = function (array) {
-  return Math.ceil(Math.random() * array.length);
+  return getRandomNumber(1, array.length);
 };
 
 var shuffleArray = function (array) {
   var newArray = array.slice();
-  var j;
-  var temp;
-  for (var i = newArray.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    temp = newArray[j];
-    newArray[j] = newArray[i];
-    newArray[i] = temp;
+  var randomArrayIndex;
+  var temporary;
+  for (var i = newArray.length - 1; i > 0; i -= 1) {
+    randomArrayIndex = getRandomNumber(0, array.length - 1);
+    temporary = newArray[randomArrayIndex];
+    newArray[randomArrayIndex] = newArray[i];
+    newArray[i] = temporary;
   }
   return newArray;
 };
@@ -98,37 +93,26 @@ var getLocationYCoords = function () {
 
 var generateMocks = function () {
   var mocks = [];
-  var getRoomsCount = function (offerType) {
-    var ROOMS_COUNT = {
-      bungalo: 1,
-      house: 2,
-      flat: 3,
-      palace: 100
-    };
-    var buildingType = Object.keys(ROOMS_COUNT);
-    buildingType.forEach(function (type) {
-      if (type === offerType) {
-        var rooms = ROOMS_COUNT[type];
-      }
-      return rooms;
-    });
+  var OFFERS_CONFIG = {
+    bungalo: {
+      roomsCount: 1,
+      guestsCount: 1
+    },
+    house: {
+      roomsCount: 2,
+      guestsCount: 2
+    },
+    flat: {
+      roomsCount: 3,
+      guestsCount: 3
+    },
+    palace: {
+      roomsCount: 100,
+      guestsCount: 0
+    }
   };
-  var getGuestsCount = function (offerType) {
-    var GUESTS_COUNT = {
-      bungalo: 1,
-      house: 2,
-      flat: 3,
-      palace: 0
-    };
-    var buildingType = Object.keys(GUESTS_COUNT);
-    buildingType.forEach(function (type) {
-      if (type === offerType) {
-        var guests = GUESTS_COUNT[type];
-      }
-      return guests;
-    });
-  };
-  for (var i = 0; i < AMOUNT_OF_MOCKS; i += 1) {
+
+  for (var i = 0; i < AVATARS.length; i += 1) {
     var pinXCoord = getLocationXCoords();
     var pinYCoord = getLocationYCoords();
     var offerType = getRandomArrayElement(OFFER_TYPES);
@@ -142,8 +126,8 @@ var generateMocks = function () {
         'address': pinXCoord + ', ' + pinYCoord,
         'price': getRandomArrayElement(OFFER_PRICES),
         'type': offerType,
-        'rooms': getRoomsCount(offerType),
-        'guests': getGuestsCount(offerType),
+        'rooms': OFFERS_CONFIG[offerType].roomsCount,
+        'guests': OFFERS_CONFIG[offerType].guestsCount,
         'checkin': offerCheckin,
         'checkout': offerCheckin,
         'features': generateRandomLengthArray(OFFER_FEATURES),
@@ -157,6 +141,7 @@ var generateMocks = function () {
     };
     mocks.push(mock);
   }
+
   return mocks;
 };
 
