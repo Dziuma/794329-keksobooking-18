@@ -21,7 +21,6 @@ var OFFER_TITLES = [
   'Сдается бунгало'
 ];
 var OFFER_PRICES = [550, 1500, 20000, 1000, 3000, 600, 1200, 3500];
-var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var OFFER_CHECKINS = ['12:00', '13:00', '14:00'];
 var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var OFFER_DESCRIPTIONS = [
@@ -45,6 +44,25 @@ var LOCATION_Y_START = 130;
 var LOCATION_Y_END = 630;
 var PIN_HALF_WIDTH = 25;
 var PIN_HEIGHT = 70;
+var OFFERS_CONFIG = {
+  bungalo: {
+    roomsCount: 1,
+    guestsCount: 1
+  },
+  house: {
+    roomsCount: 2,
+    guestsCount: 2
+  },
+  flat: {
+    roomsCount: 3,
+    guestsCount: 3
+  },
+  palace: {
+    roomsCount: 100,
+    guestsCount: 0
+  }
+};
+
 var fragment = document.createDocumentFragment();
 var pins = document.querySelector('.map__pins');
 var template = document.querySelector('#pin')
@@ -60,27 +78,21 @@ var getRandomArrayElement = function (array) {
   return array[randomArrayIndex];
 };
 
-var getRandomAmountOfArrayElements = function (array) {
-  return getRandomNumber(1, array.length);
-};
-
 var shuffleArray = function (array) {
   var newArray = array.slice();
-  var randomArrayIndex;
-  var temporary;
   for (var i = newArray.length - 1; i > 0; i -= 1) {
-    randomArrayIndex = getRandomNumber(0, array.length - 1);
-    temporary = newArray[randomArrayIndex];
+    var randomArrayIndex = getRandomNumber(0, array.length - 1);
+    var randomElement = newArray[randomArrayIndex];
     newArray[randomArrayIndex] = newArray[i];
-    newArray[i] = temporary;
+    newArray[i] = randomElement;
   }
   return newArray;
 };
 
 var generateRandomLengthArray = function (array) {
   var shuffledArray = shuffleArray(array);
-  var amountOfElements = getRandomAmountOfArrayElements(array);
-  return shuffledArray.slice(0, amountOfElements);
+  var randomLength = getRandomNumber(1, array.length);
+  return shuffledArray.slice(0, randomLength);
 };
 
 var getLocationXCoords = function () {
@@ -93,29 +105,11 @@ var getLocationYCoords = function () {
 
 var generateMocks = function () {
   var mocks = [];
-  var OFFERS_CONFIG = {
-    bungalo: {
-      roomsCount: 1,
-      guestsCount: 1
-    },
-    house: {
-      roomsCount: 2,
-      guestsCount: 2
-    },
-    flat: {
-      roomsCount: 3,
-      guestsCount: 3
-    },
-    palace: {
-      roomsCount: 100,
-      guestsCount: 0
-    }
-  };
 
   for (var i = 0; i < AVATARS.length; i += 1) {
     var pinXCoord = getLocationXCoords();
     var pinYCoord = getLocationYCoords();
-    var offerType = getRandomArrayElement(OFFER_TYPES);
+    var offerType = getRandomArrayElement(Object.keys(OFFERS_CONFIG));
     var offerCheckin = getRandomArrayElement(OFFER_CHECKINS);
     var mock = {
       'author': {
