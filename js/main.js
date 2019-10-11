@@ -165,21 +165,20 @@ var renderPins = function () {
 
 generateMocks();
 
+var ENTER_KEYCODE = 13;
+var PIN_POINTER_HEIGHT = 22;
 var map = document.querySelector('.map');
 var mapPinMain = map.querySelector('.map__pin--main');
-var formFilters = document.querySelector('.map__filters');
+var filtersForm = document.querySelector('.map__filters');
 var form = document.querySelector('.ad-form');
-var filters = formFilters.querySelectorAll('.map__filter');
-var features = formFilters.querySelectorAll('.map__features');
-var formFieldsets = form.querySelectorAll('fieldset');
-var formElements = Array.prototype.concat.apply([], [filters, features, formFieldsets]);
+var filters = filtersForm.querySelectorAll('.map__filter');
+var formFieldsets = document.querySelectorAll('fieldset');
+var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
 var address = form.querySelector('#address');
-var roomField = formFilters.querySelector('#housing-rooms');
-var guestField = formFilters.querySelector('#housing-guests');
-var ENTER_KEYCODE = 13;
+var roomField = filtersForm.querySelector('#housing-rooms');
+var guestField = filtersForm.querySelector('#housing-guests');
 
 var setAddressField = function () {
-  var PIN_POINTER_HEIGHT = 22;
   var mapPinMainHalfWidth = mapPinMain.offsetWidth / 2;
   var mapPinMainHalfHeight = mapPinMain.offsetHeight / 2;
   var mapPinMainCenterCoords = {
@@ -203,7 +202,7 @@ var setAddressField = function () {
 var disableFormElements = function () {
   formElements.forEach(function (element) {
     element.forEach(function (subElement) {
-      subElement.setAttribute('disabled', 'disabled');
+      subElement.setAttribute('disabled', 'true');
     });
   });
 };
@@ -226,12 +225,12 @@ var enableMap = function () {
 var validateInput = function (evt) {
   var target = evt.target;
 
-  if (roomField.value === '100' && target.value !== '0') {
+  if (roomField.value === '100' && guestField.value !== '0') {
     target.setCustomValidity('Этот дворец не для гостей.');
-    formFilters.reportValidity();
-  } else if (roomField.value < target.value) {
-    target.setCustomValidity('Количество гостей не должно превишать количество комнат.');
-    formFilters.reportValidity();
+    filtersForm.reportValidity();
+  } else if (roomField.value < guestField.value) {
+    target.setCustomValidity('Количество гостей не должно превышать количество комнат.');
+    filtersForm.reportValidity();
   } else {
     target.setCustomValidity('');
   }
@@ -257,3 +256,6 @@ guestField.addEventListener('input', function (evt) {
   validateInput(evt);
 });
 
+roomField.addEventListener('input', function (evt) {
+  validateInput(evt);
+});
