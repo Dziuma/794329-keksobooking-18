@@ -16,7 +16,7 @@
     </div>
 
     <!-- Карта объявлений -->
-    <section class="map">
+    <section class="map map--faded">
 
       <!-- Метки объявлений -->
       <div class="map__pins">
@@ -56,9 +56,11 @@
             <option value="1">Одна комната</option>
             <option value="2">Две комнаты</option>
             <option value="3">Три комнаты</option>
+            <option value="100">Сто комнат</option>
           </select>
           <select name="housing-guests" id="housing-guests" class="map__filter">
             <option value="any" selected>Любое число гостей</option>
+            <option value="3">Три гостя</option>
             <option value="2">Два гостя</option>
             <option value="1">Один гость</option>
             <option value="0">Не для гостей</option>
@@ -84,7 +86,7 @@
     <!-- Форма объявления -->
     <section class="notice">
       <h2 class="notice__title">Ваше объявление</h2>
-      <form class="ad-form ad-form--disabled" method="post" enctype="multipart/form-data" autocomplete="off">
+      <form class="ad-form ad-form--disabled" method="post" enctype="multipart/form-data" action="https://js.dump.academy/keksobooking" autocomplete="off">
         <fieldset class="ad-form-header">
           <legend class="ad-form-header__title">Ваша фотография (для карты)</legend>
           <div class="ad-form-header__upload">

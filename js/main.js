@@ -21,7 +21,6 @@ var OFFER_TITLES = [
   'Сдается бунгало'
 ];
 var OFFER_PRICES = [550, 1500, 20000, 1000, 3000, 600, 1200, 3500];
-var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var OFFER_CHECKINS = ['12:00', '13:00', '14:00'];
 var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var OFFER_DESCRIPTIONS = [
@@ -45,6 +44,25 @@ var LOCATION_Y_START = 130;
 var LOCATION_Y_END = 630;
 var PIN_HALF_WIDTH = 25;
 var PIN_HEIGHT = 70;
+var OFFERS_CONFIG = {
+  bungalo: {
+    roomsCount: 1,
+    guestsCount: 1
+  },
+  house: {
+    roomsCount: 2,
+    guestsCount: 2
+  },
+  flat: {
+    roomsCount: 3,
+    guestsCount: 3
+  },
+  palace: {
+    roomsCount: 100,
+    guestsCount: 0
+  }
+};
+
 var fragment = document.createDocumentFragment();
 var pins = document.querySelector('.map__pins');
 var template = document.querySelector('#pin')
@@ -60,27 +78,21 @@ var getRandomArrayElement = function (array) {
   return array[randomArrayIndex];
 };
 
-var getRandomAmountOfArrayElements = function (array) {
-  return getRandomNumber(1, array.length);
-};
-
 var shuffleArray = function (array) {
   var newArray = array.slice();
-  var randomArrayIndex;
-  var temporary;
   for (var i = newArray.length - 1; i > 0; i -= 1) {
-    randomArrayIndex = getRandomNumber(0, array.length - 1);
-    temporary = newArray[randomArrayIndex];
+    var randomArrayIndex = getRandomNumber(0, array.length - 1);
+    var randomElement = newArray[randomArrayIndex];
     newArray[randomArrayIndex] = newArray[i];
-    newArray[i] = temporary;
+    newArray[i] = randomElement;
   }
   return newArray;
 };
 
 var generateRandomLengthArray = function (array) {
   var shuffledArray = shuffleArray(array);
-  var amountOfElements = getRandomAmountOfArrayElements(array);
-  return shuffledArray.slice(0, amountOfElements);
+  var randomLength = getRandomNumber(1, array.length);
+  return shuffledArray.slice(0, randomLength);
 };
 
 var getLocationXCoords = function () {
@@ -93,29 +105,11 @@ var getLocationYCoords = function () {
 
 var generateMocks = function () {
   var mocks = [];
-  var OFFERS_CONFIG = {
-    bungalo: {
-      roomsCount: 1,
-      guestsCount: 1
-    },
-    house: {
-      roomsCount: 2,
-      guestsCount: 2
-    },
-    flat: {
-      roomsCount: 3,
-      guestsCount: 3
-    },
-    palace: {
-      roomsCount: 100,
-      guestsCount: 0
-    }
-  };
 
   for (var i = 0; i < AVATARS.length; i += 1) {
     var pinXCoord = getLocationXCoords();
     var pinYCoord = getLocationYCoords();
-    var offerType = getRandomArrayElement(OFFER_TYPES);
+    var offerType = getRandomArrayElement(Object.keys(OFFERS_CONFIG));
     var offerCheckin = getRandomArrayElement(OFFER_CHECKINS);
     var mock = {
       'author': {
@@ -165,4 +159,97 @@ var renderPins = function () {
 
 generateMocks();
 
-renderPins();
+var ENTER_KEYCODE = 13;
+var PIN_POINTER_HEIGHT = 22;
+var map = document.querySelector('.map');
+var mapPinMain = map.querySelector('.map__pin--main');
+var filtersForm = document.querySelector('.map__filters');
+var form = document.querySelector('.ad-form');
+var filters = filtersForm.querySelectorAll('.map__filter');
+var formFieldsets = document.querySelectorAll('fieldset');
+var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
+var address = form.querySelector('#address');
+var roomField = filtersForm.querySelector('#housing-rooms');
+var guestField = filtersForm.querySelector('#housing-guests');
+
+var setAddressField = function () {
+  var mapPinMainHalfWidth = mapPinMain.offsetWidth / 2;
+  var mapPinMainHalfHeight = mapPinMain.offsetHeight / 2;
+  var mapPinMainCenterCoords = {
+    x: Math.round(mapPinMain.offsetLeft + mapPinMainHalfWidth),
+    y: Math.round(mapPinMain.offsetTop + mapPinMainHalfHeight)
+  };
+  var mapPinMainPointerCoords = {
+    x: Math.round(mapPinMain.offsetLeft + mapPinMainHalfWidth),
+    y: Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight + PIN_POINTER_HEIGHT)
+  };
+
+  var isActive = !map.classList.contains('map--faded');
+
+  if (isActive) {
+    address.value = mapPinMainPointerCoords.x + ', ' + mapPinMainPointerCoords.y;
+  } else {
+    address.value = mapPinMainCenterCoords.x + ', ' + mapPinMainCenterCoords.y;
+  }
+};
+
+var disableFormElements = function () {
+  formElements.forEach(function (element) {
+    element.forEach(function (subElement) {
+      subElement.setAttribute('disabled', 'true');
+    });
+  });
+};
+
+var enableFormElements = function () {
+  form.classList.remove('ad-form--disabled');
+  formElements.forEach(function (element) {
+    element.forEach(function (subElement) {
+      subElement.removeAttribute('disabled');
+    });
+  });
+};
+
+var enableMap = function () {
+  renderPins();
+  map.classList.remove('map--faded');
+  enableFormElements();
+};
+
+var validateInput = function (evt) {
+  var target = evt.target;
+
+  if (roomField.value === '100' && guestField.value !== '0') {
+    target.setCustomValidity('Этот дворец не для гостей.');
+    filtersForm.reportValidity();
+  } else if (roomField.value < guestField.value) {
+    target.setCustomValidity('Количество гостей не должно превышать количество комнат.');
+    filtersForm.reportValidity();
+  } else {
+    target.setCustomValidity('');
+  }
+};
+
+disableFormElements();
+
+setAddressField();
+
+mapPinMain.addEventListener('mousedown', function () {
+  enableMap();
+  setAddressField();
+});
+
+mapPinMain.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    enableMap();
+    setAddressField();
+  }
+});
+
+guestField.addEventListener('input', function (evt) {
+  validateInput(evt);
+});
+
+roomField.addEventListener('input', function (evt) {
+  validateInput(evt);
+});
