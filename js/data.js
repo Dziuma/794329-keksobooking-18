@@ -46,19 +46,23 @@
   var OFFERS_CONFIG = {
     bungalo: {
       roomsCount: 1,
-      guestsCount: 1
+      guestsCount: 1,
+      name: 'Бунгало'
     },
     house: {
       roomsCount: 2,
-      guestsCount: 2
+      guestsCount: 2,
+      name: 'Дом'
     },
     flat: {
       roomsCount: 3,
-      guestsCount: 3
+      guestsCount: 3,
+      name: 'Квартира'
     },
     palace: {
       roomsCount: 100,
-      guestsCount: 0
+      guestsCount: 0,
+      name: 'Дворец'
     }
   };
 
@@ -134,5 +138,6 @@
 
   var mocks = generateMocks();
 
+  window.OFFERS_CONFIG = OFFERS_CONFIG;
   window.mocks = mocks;
 })();

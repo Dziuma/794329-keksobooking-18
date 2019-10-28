@@ -5,12 +5,6 @@
   var PIN_POINTER_HEIGHT = 22;
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
-  var OFFERS_TRANSLATION = {
-    bungalo: 'Бунгало',
-    flat: 'Квартира',
-    house: 'Дом',
-    palace: 'Дворец',
-  };
   var map = document.querySelector('.map');
   var mapPinMain = map.querySelector('.map__pin--main');
   var filtersForm = document.querySelector('.map__filters');
@@ -21,12 +15,11 @@
   var addressField = form.querySelector('#address');
   var roomField = filtersForm.querySelector('#housing-rooms');
   var guestField = filtersForm.querySelector('#housing-guests');
-  var fragment = document.createDocumentFragment();
   var pins = document.querySelector('.map__pins');
-  var templatePin = document.querySelector('#pin')
+  var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
-  var templateCard = document.querySelector('#card')
+  var cardTemplate = document.querySelector('#card')
   .content
   .querySelector('.map__card');
 
@@ -68,14 +61,8 @@
     });
   };
 
-  var hideElements = function (elements) {
-    elements.forEach(function (element) {
-      element.style.display = 'none';
-    });
-  };
-
   var createPin = function (mock) {
-    var pin = templatePin.cloneNode(true);
+    var pin = pinTemplate.cloneNode(true);
     pin.querySelector('img').src = mock.author.avatar;
     pin.querySelector('img').alt = mock.offer.title;
     pin.style.left = (mock.location.x - PIN_HALF_WIDTH) + 'px';
@@ -85,51 +72,57 @@
   };
 
   var renderPins = function () {
+    var pinFragment = document.createDocumentFragment();
+
     window.mocks.forEach(function (mock) {
-      fragment.appendChild(createPin(mock));
+      pinFragment.appendChild(createPin(mock));
     });
-    pins.appendChild(fragment);
+    pins.appendChild(pinFragment);
   };
 
   var createCard = function (mock) {
-    var card = templateCard.cloneNode(true);
-    var features = card.querySelectorAll('.popup__feature');
+    var card = cardTemplate.cloneNode(true);
+    var featuresList = card.querySelector('.popup__features');
     var photo = card.querySelector('.popup__photo');
+    var photosContainer = card.querySelector('.popup__photos');
     var photoLinks = mock.offer.photos;
 
     card.querySelector('.popup__title').textContent = mock.offer.title;
     card.querySelector('.popup__text--address').textContent = mock.offer.address;
     card.querySelector('.popup__text--price').textContent = mock.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = OFFERS_TRANSLATION[mock.offer.type];
+    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[mock.offer.type];
     card.querySelector('.popup__text--capacity').textContent = mock.offer.rooms + ' комнаты для ' + mock.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + mock.offer.checkin + ', выезд до ' + mock.offer.checkout;
     card.querySelector('.popup__description').textContent = mock.offer.description;
     card.querySelector('.popup__avatar').src = mock.author.avatar;
 
-    hideElements(features);
+    featuresList.innerHTML = '';
 
-    mock.offer.features.forEach(function (element) {
-      card.querySelector('.popup__feature--' + element).style.display = 'inline-block';
+    mock.offer.features.forEach(function (feature) {
+      var featuresItem = document.createElement('LI');
+      featuresItem.classList.add('popup__feature');
+      featuresItem.classList.add('popup__feature--' + feature);
+      featuresList.appendChild(featuresItem);
     });
 
+    photosContainer.removeChild(photo);
+
     for (var i = 0; i < photoLinks.length; i += 1) {
-      photo.src = photoLinks[i];
-
-      if (i === photoLinks.length - 1) {
-        break;
-      }
-
-      photo.parentElement.appendChild(photo.cloneNode(true));
+      var newPhoto = photo.cloneNode(true);
+      newPhoto.src = photoLinks[i];
+      photosContainer.appendChild(newPhoto);
     }
 
     return card;
   };
 
   var renderCard = function () {
-    var mapFiltersContainer = map.querySelector('.map__filters-container');
+    var cardFragment = document.createDocumentFragment();
+    var filtersContainer = map.querySelector('.map__filters-container');
     var card = createCard(window.mocks[0]);
-    fragment.appendChild(card);
-    map.insertBefore(fragment, mapFiltersContainer);
+
+    cardFragment.appendChild(card);
+    map.insertBefore(cardFragment, filtersContainer);
   };
 
   var enableMap = function () {
