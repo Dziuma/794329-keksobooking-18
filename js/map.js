@@ -12,14 +12,16 @@
   var filters = filtersForm.querySelectorAll('.map__filter');
   var formFieldsets = document.querySelectorAll('fieldset');
   var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
-  var address = form.querySelector('#address');
+  var addressField = form.querySelector('#address');
   var roomField = filtersForm.querySelector('#housing-rooms');
   var guestField = filtersForm.querySelector('#housing-guests');
-  var fragment = document.createDocumentFragment();
   var pins = document.querySelector('.map__pins');
-  var template = document.querySelector('#pin')
+  var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
+  var cardTemplate = document.querySelector('#card')
+  .content
+  .querySelector('.map__card');
 
   var setAddressField = function () {
     var mapPinMainHalfWidth = mapPinMain.offsetWidth / 2;
@@ -36,9 +38,9 @@
     var isActive = !map.classList.contains('map--faded');
 
     if (isActive) {
-      address.value = mapPinMainPointerCoords.x + ', ' + mapPinMainPointerCoords.y;
+      addressField.value = mapPinMainPointerCoords.x + ', ' + mapPinMainPointerCoords.y;
     } else {
-      address.value = mapPinMainCenterCoords.x + ', ' + mapPinMainCenterCoords.y;
+      addressField.value = mapPinMainCenterCoords.x + ', ' + mapPinMainCenterCoords.y;
     }
   };
 
@@ -60,7 +62,7 @@
   };
 
   var createPin = function (mock) {
-    var pin = template.cloneNode(true);
+    var pin = pinTemplate.cloneNode(true);
     pin.querySelector('img').src = mock.author.avatar;
     pin.querySelector('img').alt = mock.offer.title;
     pin.style.left = (mock.location.x - PIN_HALF_WIDTH) + 'px';
@@ -70,15 +72,64 @@
   };
 
   var renderPins = function () {
+    var pinFragment = document.createDocumentFragment();
+
     window.mocks.forEach(function (mock) {
-      fragment.appendChild(createPin(mock));
+      pinFragment.appendChild(createPin(mock));
     });
-    pins.appendChild(fragment);
+    pins.appendChild(pinFragment);
   };
+
+  var createCard = function (mock) {
+    var card = cardTemplate.cloneNode(true);
+    var featuresList = card.querySelector('.popup__features');
+    var photo = card.querySelector('.popup__photo');
+    var photosContainer = card.querySelector('.popup__photos');
+    var photoLinks = mock.offer.photos;
+
+    card.querySelector('.popup__title').textContent = mock.offer.title;
+    card.querySelector('.popup__text--address').textContent = mock.offer.address;
+    card.querySelector('.popup__text--price').textContent = mock.offer.price + '₽/ночь';
+    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[mock.offer.type];
+    card.querySelector('.popup__text--capacity').textContent = mock.offer.rooms + ' комнаты для ' + mock.offer.guests + ' гостей';
+    card.querySelector('.popup__text--time').textContent = 'Заезд после ' + mock.offer.checkin + ', выезд до ' + mock.offer.checkout;
+    card.querySelector('.popup__description').textContent = mock.offer.description;
+    card.querySelector('.popup__avatar').src = mock.author.avatar;
+
+    featuresList.innerHTML = '';
+
+    mock.offer.features.forEach(function (feature) {
+      var featuresItem = document.createElement('LI');
+      featuresItem.classList.add('popup__feature');
+      featuresItem.classList.add('popup__feature--' + feature);
+      featuresList.appendChild(featuresItem);
+    });
+
+    photosContainer.removeChild(photo);
+
+    for (var i = 0; i < photoLinks.length; i += 1) {
+      var newPhoto = photo.cloneNode(true);
+      newPhoto.src = photoLinks[i];
+      photosContainer.appendChild(newPhoto);
+    }
+
+    return card;
+  };
+
+  var renderCard = function () {
+    var cardFragment = document.createDocumentFragment();
+    var filtersContainer = map.querySelector('.map__filters-container');
+    var card = createCard(window.mocks[0]);
+
+    cardFragment.appendChild(card);
+    map.insertBefore(cardFragment, filtersContainer);
+  };
+
   var enableMap = function () {
     renderPins();
     map.classList.remove('map--faded');
     enableFormElements();
+    renderCard();
   };
 
   var validateInput = function (evt) {
