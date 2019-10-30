@@ -13,8 +13,6 @@
   var formFieldsets = document.querySelectorAll('fieldset');
   var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
   var addressField = form.querySelector('#address');
-  var roomField = filtersForm.querySelector('#housing-rooms');
-  var guestField = filtersForm.querySelector('#housing-guests');
   var pins = document.querySelector('.map__pins');
   var pinTemplate = document.querySelector('#pin')
   .content
@@ -132,20 +130,6 @@
     enableFormElements();
   };
 
-  var validateInput = function (evt) {
-    var target = evt.target;
-
-    if (roomField.value === '100' && guestField.value !== '0') {
-      target.setCustomValidity('Этот дворец не для гостей.');
-      filtersForm.reportValidity();
-    } else if (roomField.value < guestField.value) {
-      target.setCustomValidity('Количество гостей не должно превышать количество комнат.');
-      filtersForm.reportValidity();
-    } else {
-      target.setCustomValidity('');
-    }
-  };
-
   disableFormElements();
 
   setAddressField();
@@ -205,12 +189,4 @@
   mapPinMain.addEventListener('mousedown', mainPinMouseDownHandler);
 
   mapPinMain.addEventListener('keydown', mainPinEnterPressHandler);
-
-  guestField.addEventListener('input', function (evt) {
-    validateInput(evt);
-  });
-
-  roomField.addEventListener('input', function (evt) {
-    validateInput(evt);
-  });
 })();
