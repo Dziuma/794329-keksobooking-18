@@ -75,7 +75,8 @@
     var pinFragment = document.createDocumentFragment();
 
     window.mocks.forEach(function (mock) {
-      pinFragment.appendChild(createPin(mock));
+      var pin = createPin(mock);
+      pinFragment.appendChild(pin);
     });
     pins.appendChild(pinFragment);
   };
@@ -90,7 +91,7 @@
     card.querySelector('.popup__title').textContent = mock.offer.title;
     card.querySelector('.popup__text--address').textContent = mock.offer.address;
     card.querySelector('.popup__text--price').textContent = mock.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[mock.offer.type];
+    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[mock.offer.type].name;
     card.querySelector('.popup__text--capacity').textContent = mock.offer.rooms + ' комнаты для ' + mock.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + mock.offer.checkin + ', выезд до ' + mock.offer.checkout;
     card.querySelector('.popup__description').textContent = mock.offer.description;
@@ -116,10 +117,10 @@
     return card;
   };
 
-  var renderCard = function () {
+  var renderCard = function (mock) {
     var cardFragment = document.createDocumentFragment();
     var filtersContainer = map.querySelector('.map__filters-container');
-    var card = createCard(window.mocks[0]);
+    var card = createCard(mock);
 
     cardFragment.appendChild(card);
     map.insertBefore(cardFragment, filtersContainer);
@@ -129,7 +130,6 @@
     renderPins();
     map.classList.remove('map--faded');
     enableFormElements();
-    renderCard();
   };
 
   var validateInput = function (evt) {
@@ -150,15 +150,51 @@
 
   setAddressField();
 
+  var removeCard = function () {
+    var card = document.querySelector('.map__card');
+    var cardParent = card.parentNode;
+    cardParent.removeChild(card);
+  };
+
+  var addOnPinsClickListeners = function () {
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    var addClickListener = function (pin, mock) {
+      pin.addEventListener('click', function () {
+        renderCard(mock);
+
+        var cardClose = document.querySelector('.popup__close');
+
+        cardClose.addEventListener('click', function () {
+          removeCard();
+        });
+
+        document.addEventListener('keydown', function (keyEvt) {
+          if (keyEvt.keyCode === 27) {
+            removeCard();
+          }
+        });
+      });
+    };
+
+    for (var i = 0; i < mapPins.length; i += 1) {
+      var pin = mapPins[i];
+      var mock = window.mocks[i];
+      addClickListener(pin, mock);
+    }
+  };
+
   mapPinMain.addEventListener('mousedown', function () {
     enableMap();
     setAddressField();
+    addOnPinsClickListeners();
   });
 
   mapPinMain.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
       enableMap();
       setAddressField();
+      addOnPinsClickListeners();
     }
   });
 
