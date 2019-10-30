@@ -184,19 +184,27 @@
     }
   };
 
-  mapPinMain.addEventListener('mousedown', function () {
+  var onPageActive = function () {
     enableMap();
     setAddressField();
     addOnPinsClickListeners();
-  });
+  };
 
-  mapPinMain.addEventListener('keydown', function (evt) {
+  var mainPinMouseDownHandler = function () {
+    onPageActive();
+    mapPinMain.removeEventListener('mousedown', mainPinMouseDownHandler);
+  };
+
+  var mainPinEnterPressHandler = function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      enableMap();
-      setAddressField();
-      addOnPinsClickListeners();
+      onPageActive();
+      mapPinMain.removeEventListener('keydown', mainPinEnterPressHandler);
     }
-  });
+  };
+
+  mapPinMain.addEventListener('mousedown', mainPinMouseDownHandler);
+
+  mapPinMain.addEventListener('keydown', mainPinEnterPressHandler);
 
   guestField.addEventListener('input', function (evt) {
     validateInput(evt);
