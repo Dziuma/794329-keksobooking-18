@@ -6,7 +6,7 @@
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
   var map = document.querySelector('.map');
-  var mapPinMain = map.querySelector('.map__pin--main');
+  var mainPin = map.querySelector('.map__pin--main');
   var filtersForm = document.querySelector('.map__filters');
   var form = document.querySelector('.ad-form');
   var filters = filtersForm.querySelectorAll('.map__filter');
@@ -14,6 +14,8 @@
   var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
   var addressField = form.querySelector('#address');
   var pins = document.querySelector('.map__pins');
+  var mainPinHalfWidth = mainPin.offsetWidth / 2;
+  var mainPinHalfHeight = mainPin.offsetHeight / 2;
   var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
@@ -22,23 +24,21 @@
   .querySelector('.map__card');
 
   var setAddressField = function () {
-    var mapPinMainHalfWidth = mapPinMain.offsetWidth / 2;
-    var mapPinMainHalfHeight = mapPinMain.offsetHeight / 2;
-    var mapPinMainCenterCoords = {
-      x: Math.round(mapPinMain.offsetLeft + mapPinMainHalfWidth),
-      y: Math.round(mapPinMain.offsetTop + mapPinMainHalfHeight)
+    var mainPinCenterCoords = {
+      x: Math.round(mainPin.offsetLeft + mainPinHalfWidth),
+      y: Math.round(mainPin.offsetTop + mainPinHalfHeight)
     };
-    var mapPinMainPointerCoords = {
-      x: Math.round(mapPinMain.offsetLeft + mapPinMainHalfWidth),
-      y: Math.round(mapPinMain.offsetTop + mapPinMain.offsetHeight + PIN_POINTER_HEIGHT)
+    var mainPinPointerCoords = {
+      x: Math.round(mainPin.offsetLeft + mainPinHalfWidth),
+      y: Math.round(mainPin.offsetTop + mainPin.offsetHeight + PIN_POINTER_HEIGHT)
     };
 
     var isActive = !map.classList.contains('map--faded');
 
     if (isActive) {
-      addressField.value = mapPinMainPointerCoords.x + ', ' + mapPinMainPointerCoords.y;
+      addressField.value = mainPinPointerCoords.x + ', ' + mainPinPointerCoords.y;
     } else {
-      addressField.value = mapPinMainCenterCoords.x + ', ' + mapPinMainCenterCoords.y;
+      addressField.value = mainPinCenterCoords.x + ', ' + mainPinCenterCoords.y;
     }
   };
 
@@ -134,10 +134,8 @@
 
   setAddressField();
 
-  var removeCard = function () {
-    var card = document.querySelector('.map__card');
-    var cardParent = card.parentNode;
-    cardParent.removeChild(card);
+  var removeElement = function (element) {
+    element.remove();
   };
 
   var addOnPinsClickListeners = function () {
@@ -147,15 +145,16 @@
       pin.addEventListener('click', function () {
         renderCard(mock);
 
+        var card = document.querySelector('.map__card');
         var cardClose = document.querySelector('.popup__close');
 
         cardClose.addEventListener('click', function () {
-          removeCard();
+          removeElement(card);
         });
 
         document.addEventListener('keydown', function (keyEvt) {
           if (keyEvt.keyCode === 27) {
-            removeCard();
+            removeElement(card);
           }
         });
       });
@@ -168,25 +167,27 @@
     }
   };
 
-  var onPageActive = function () {
+  var activetePage = function () {
     enableMap();
     setAddressField();
     addOnPinsClickListeners();
   };
 
+  activetePage(); // Delete this
+
   var mainPinMouseDownHandler = function () {
-    onPageActive();
-    mapPinMain.removeEventListener('mousedown', mainPinMouseDownHandler);
+    activetePage();
+    mainPin.removeEventListener('mousedown', mainPinMouseDownHandler);
   };
 
   var mainPinEnterPressHandler = function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      onPageActive();
-      mapPinMain.removeEventListener('keydown', mainPinEnterPressHandler);
+      activetePage();
+      mainPin.removeEventListener('keydown', mainPinEnterPressHandler);
     }
   };
 
-  mapPinMain.addEventListener('mousedown', mainPinMouseDownHandler);
+  mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
 
-  mapPinMain.addEventListener('keydown', mainPinEnterPressHandler);
+  mainPin.addEventListener('keydown', mainPinEnterPressHandler);
 })();
