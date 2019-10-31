@@ -4,6 +4,10 @@
   var form = document.querySelector('.ad-form');
   var roomNumber = form.querySelector('#room_number');
   var capacity = form.querySelector('#capacity');
+  var typeField = form.querySelector('#type');
+  var priceField = form.querySelector('#price');
+  var timeIn = form.querySelector('#timein');
+  var timeOut = form.querySelector('#timeout');
 
   var validateInput = function (evt) {
     var target = evt.target;
@@ -37,9 +41,6 @@
     }
   });
 
-  var typeField = form.querySelector('#type');
-  var priceField = form.querySelector('#price');
-
   var setMinPrice = function () {
     priceField.setAttribute('min', window.OFFERS_CONFIG[typeField.value].minCost);
   };
@@ -48,5 +49,17 @@
 
   typeField.addEventListener('input', function () {
     setMinPrice();
+  });
+
+  timeIn.addEventListener('input', function (evt) {
+    var target = evt.target;
+
+    timeOut.selectedIndex = target.selectedIndex;
+  });
+
+  timeOut.addEventListener('input', function (evt) {
+    var target = evt.target;
+
+    timeIn.selectedIndex = target.selectedIndex;
   });
 })();
