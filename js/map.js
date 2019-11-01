@@ -66,6 +66,10 @@
     pin.style.left = (mock.location.x - PIN_HALF_WIDTH) + 'px';
     pin.style.top = (mock.location.y - PIN_HEIGHT) + 'px';
 
+    pin.addEventListener('click', function () {
+      renderCard(mock);
+    });
+
     return pin;
   };
 
@@ -85,6 +89,7 @@
     var photo = card.querySelector('.popup__photo');
     var photosContainer = card.querySelector('.popup__photos');
     var photoLinks = mock.offer.photos;
+    var cardClose = card.querySelector('.popup__close');
 
     card.querySelector('.popup__title').textContent = mock.offer.title;
     card.querySelector('.popup__text--address').textContent = mock.offer.address;
@@ -112,6 +117,16 @@
       photosContainer.appendChild(newPhoto);
     }
 
+    cardClose.addEventListener('click', function () {
+      removeElement(card);
+    });
+
+    document.addEventListener('keydown', function (keyEvt) {
+      if (keyEvt.keyCode === 27) {
+        removeElement(card);
+      }
+    });
+
     return card;
   };
 
@@ -138,49 +153,19 @@
     element.remove();
   };
 
-  var addOnPinsClickListeners = function () {
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-
-    var addClickListener = function (pin, mock) {
-      pin.addEventListener('click', function () {
-        renderCard(mock);
-
-        var card = document.querySelector('.map__card');
-        var cardClose = document.querySelector('.popup__close');
-
-        cardClose.addEventListener('click', function () {
-          removeElement(card);
-        });
-
-        document.addEventListener('keydown', function (keyEvt) {
-          if (keyEvt.keyCode === 27) {
-            removeElement(card);
-          }
-        });
-      });
-    };
-
-    for (var i = 0; i < mapPins.length; i += 1) {
-      var pin = mapPins[i];
-      var mock = window.mocks[i];
-      addClickListener(pin, mock);
-    }
-  };
-
-  var activetePage = function () {
+  var activatePage = function () {
     enableMap();
     setAddressField();
-    addOnPinsClickListeners();
   };
 
   var mainPinMouseDownHandler = function () {
-    activetePage();
+    activatePage();
     mainPin.removeEventListener('mousedown', mainPinMouseDownHandler);
   };
 
   var mainPinEnterPressHandler = function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      activetePage();
+      activatePage();
       mainPin.removeEventListener('keydown', mainPinEnterPressHandler);
     }
   };
@@ -188,4 +173,6 @@
   mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
 
   mainPin.addEventListener('keydown', mainPinEnterPressHandler);
+
+  window.mainPin = mainPin;
 })();

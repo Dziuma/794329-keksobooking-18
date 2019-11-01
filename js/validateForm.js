@@ -9,29 +9,30 @@
   var checkin = form.querySelector('#timein');
   var checkout = form.querySelector('#timeout');
 
-  var validateRoomsAndGuestsInput = function (evt, rooms, guests) {
-    var target = evt.target;
+  var validateRoomsAndGuestsInput = function (rooms, guests) {
+    var message = '';
 
     if (rooms === '100' && guests !== '0') {
-      target.setCustomValidity('Этот дворец не для гостей.');
-      form.reportValidity();
+      message = 'Этот дворец не для гостей.';
     } else if (rooms !== '100' && guests === '0') {
-      target.setCustomValidity('Укажите количество гостей.');
-      form.reportValidity();
+      message = 'Укажите количество гостей.';
     } else if (rooms < guests) {
-      target.setCustomValidity('Количество гостей не должно превышать количество комнат.');
-      form.reportValidity();
-    } else {
-      target.setCustomValidity('');
+      message = 'Количество гостей не должно превышать количество комнат.';
     }
+
+    return message;
   };
 
   roomNumber.addEventListener('input', function (evt) {
+    evt.target.setCustomValidity(validateRoomsAndGuestsInput(roomNumber.value, capacity.value));
     validateRoomsAndGuestsInput(evt, roomNumber.value, capacity.value);
+    roomNumber.reportValidity();
   });
 
   capacity.addEventListener('input', function (evt) {
+    evt.target.setCustomValidity(validateRoomsAndGuestsInput(roomNumber.value, capacity.value));
     validateRoomsAndGuestsInput(evt, roomNumber.value, capacity.value);
+    capacity.reportValidity();
   });
 
   var setMinPrice = function (element, type) {
