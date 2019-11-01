@@ -14,8 +14,13 @@
 
     if (rooms === '100' && guests !== '0') {
       target.setCustomValidity('Этот дворец не для гостей.');
+      form.reportValidity();
+    } else if (rooms !== '100' && guests === '0') {
+      target.setCustomValidity('Укажите количество гостей.');
+      form.reportValidity();
     } else if (rooms < guests) {
       target.setCustomValidity('Количество гостей не должно превышать количество комнат.');
+      form.reportValidity();
     } else {
       target.setCustomValidity('');
     }
@@ -29,23 +34,11 @@
     validateRoomsAndGuestsInput(evt, roomNumber.value, capacity.value);
   });
 
-  form.addEventListener('submit', function (evt) {
-    if (roomNumber.value === '100' && capacity.value !== '0') {
-      evt.preventDefault();
-      capacity.setCustomValidity('Этот дворец не для гостей.');
-    } else if (roomNumber.value < capacity.value) {
-      evt.preventDefault();
-      capacity.setCustomValidity('Количество гостей не должно превышать количество комнат.');
-    } else {
-      capacity.setCustomValidity('');
-    }
-  });
-
-  var setMinPrice = function () {
-    apartmentPrice.setAttribute('min', window.OFFERS_CONFIG[apartmentType.value].minCost);
+  var setMinPrice = function (element, type) {
+    element.setAttribute('min', window.OFFERS_CONFIG[type.value].minCost);
   };
 
-  setMinPrice();
+  setMinPrice(apartmentPrice, apartmentType);
 
   apartmentType.addEventListener('input', function () {
     setMinPrice();

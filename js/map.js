@@ -173,8 +173,6 @@
     addOnPinsClickListeners();
   };
 
-  activetePage(); // Delete this
-
   var mainPinMouseDownHandler = function () {
     activetePage();
     mainPin.removeEventListener('mousedown', mainPinMouseDownHandler);
