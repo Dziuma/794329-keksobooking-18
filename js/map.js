@@ -2,7 +2,7 @@
 
 (function () {
   var ENTER_KEYCODE = 13;
-  var PIN_POINTER_HEIGHT = 22;
+  var PIN_POINTER_HEIGHT = 17;
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
   var map = document.querySelector('.map');
@@ -16,6 +16,7 @@
   var pins = document.querySelector('.map__pins');
   var mainPinHalfWidth = mainPin.offsetWidth / 2;
   var mainPinHalfHeight = mainPin.offsetHeight / 2;
+  var mainPinFullHeight = mainPin.offsetHeight + PIN_POINTER_HEIGHT;
   var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
@@ -30,7 +31,7 @@
     };
     var mainPinPointerCoords = {
       x: Math.round(mainPin.offsetLeft + mainPinHalfWidth),
-      y: Math.round(mainPin.offsetTop + mainPin.offsetHeight + PIN_POINTER_HEIGHT)
+      y: Math.round(mainPin.offsetTop + mainPinFullHeight)
     };
 
     var isActive = !map.classList.contains('map--faded');
@@ -175,4 +176,6 @@
   mainPin.addEventListener('keydown', mainPinEnterPressHandler);
 
   window.mainPin = mainPin;
+  window.mainPinFullHeight = mainPinFullHeight;
+  window.setAddressField = setAddressField;
 })();

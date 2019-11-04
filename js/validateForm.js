@@ -9,7 +9,7 @@
   var checkin = form.querySelector('#timein');
   var checkout = form.querySelector('#timeout');
 
-  var validateRoomsAndGuestsInput = function (rooms, guests) {
+  var validateGuestsInput = function (rooms, guests) {
     var message = '';
 
     if (rooms === '100' && guests !== '0') {
@@ -23,15 +23,29 @@
     return message;
   };
 
+  var validateRoomsInput = function (rooms, guests) {
+    var message = '';
+
+    if (rooms === '100' && guests !== '0') {
+      message = 'Этот дворец не для гостей.';
+    } else if (rooms !== '100' && guests === '0') {
+      message = 'Не для гостей только дворец.';
+    } else if (rooms > guests) {
+      message = 'Количество комнат не должно превышать количества гостей.';
+    }
+
+    return message;
+  };
+
   roomNumber.addEventListener('input', function (evt) {
-    evt.target.setCustomValidity(validateRoomsAndGuestsInput(roomNumber.value, capacity.value));
-    validateRoomsAndGuestsInput(evt, roomNumber.value, capacity.value);
+    // validateRoomsInput(roomNumber.value, capacity.value);
+    evt.target.setCustomValidity(validateRoomsInput(roomNumber.value, capacity.value));
     roomNumber.reportValidity();
   });
 
   capacity.addEventListener('input', function (evt) {
-    evt.target.setCustomValidity(validateRoomsAndGuestsInput(roomNumber.value, capacity.value));
-    validateRoomsAndGuestsInput(evt, roomNumber.value, capacity.value);
+    // validateGuestsInput(roomNumber.value, capacity.value);
+    evt.target.setCustomValidity(validateGuestsInput(roomNumber.value, capacity.value));
     capacity.reportValidity();
   });
 
