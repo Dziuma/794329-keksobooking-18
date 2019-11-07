@@ -76,6 +76,14 @@
     pin.setAttribute('class', 'map__pin map__pin--active');
   };
 
+  var deleteCard = function () {
+    var card = document.querySelector('.map__card');
+
+    if (card) {
+      card.remove();
+    }
+  };
+
   var createPin = function (mock) {
     var pin = pinTemplate.cloneNode(true);
     pin.querySelector('img').src = mock.author.avatar;
@@ -85,6 +93,7 @@
     pin.setAttribute('hidden', 'true');
 
     pin.addEventListener('click', function (evt) {
+      deleteCard();
       renderCard(mock);
       addPinActiveClass(evt, pin);
     });
@@ -127,12 +136,12 @@
     }
 
     cardClose.addEventListener('click', function () {
-      removeElement(card);
+      card.remove();
     });
 
     document.addEventListener('keydown', function (keyEvt) {
       if (keyEvt.keyCode === 27) {
-        removeElement(card);
+        card.remove();
       }
     });
 
@@ -156,10 +165,6 @@
   disableFormElements();
 
   setAddressField();
-
-  var removeElement = function (element) {
-    element.remove();
-  };
 
   var activatePage = function () {
     enableMap();
