@@ -78,16 +78,6 @@
     return pin;
   };
 
-  // var renderPins = function () {
-  //   var pinFragment = document.createDocumentFragment();
-
-  //   window.mocks.forEach(function (mock) {
-  //     var pin = createPin(mock);
-  //     pinFragment.appendChild(pin);
-  //   });
-  //   pinsContainer.appendChild(pinFragment);
-  // };
-
   var createCard = function (mock) {
     var card = cardTemplate.cloneNode(true);
     var featuresList = card.querySelector('.popup__features');
@@ -145,7 +135,6 @@
   };
 
   var enableMap = function () {
-    // renderPins();
     map.classList.remove('map--faded');
     enableFormElements();
   };
