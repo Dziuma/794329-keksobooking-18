@@ -30,7 +30,7 @@
       message = 'Этот дворец не для гостей.';
     } else if (rooms !== '100' && guests === '0') {
       message = 'Не для гостей только дворец.';
-    } else if (rooms > guests) {
+    } else if (rooms !== '100' && rooms > guests) {
       message = 'Количество комнат не должно превышать количества гостей.';
     }
 
@@ -38,14 +38,16 @@
   };
 
   roomNumber.addEventListener('input', function (evt) {
-    // validateRoomsInput(roomNumber.value, capacity.value);
-    evt.target.setCustomValidity(validateRoomsInput(roomNumber.value, capacity.value));
+    var message = validateRoomsInput(roomNumber.value, capacity.value);
+
+    evt.target.setCustomValidity(message);
     roomNumber.reportValidity();
   });
 
   capacity.addEventListener('input', function (evt) {
-    // validateGuestsInput(roomNumber.value, capacity.value);
-    evt.target.setCustomValidity(validateGuestsInput(roomNumber.value, capacity.value));
+    var message = validateGuestsInput(roomNumber.value, capacity.value);
+
+    evt.target.setCustomValidity(message);
     capacity.reportValidity();
   });
 

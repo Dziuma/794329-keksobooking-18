@@ -175,6 +175,7 @@
 
   mainPin.addEventListener('keydown', mainPinEnterPressHandler);
 
+  window.map = map;
   window.mainPin = mainPin;
   window.mainPinFullHeight = mainPinFullHeight;
   window.setAddressField = setAddressField;
