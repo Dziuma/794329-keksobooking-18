@@ -53,8 +53,8 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  var onMouseMove = function (moveEvt) {
-    moveTo(moveEvt, mainPin, map);
+  var onMouseMove = function (evt) {
+    moveTo(evt, mainPin, map);
   };
 
   var onMouseUp = function (evt) {

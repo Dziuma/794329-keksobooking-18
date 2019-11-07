@@ -13,7 +13,7 @@
   var formFieldsets = document.querySelectorAll('fieldset');
   var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
   var addressField = form.querySelector('#address');
-  var pins = document.querySelector('.map__pins');
+  var pinsContainer = document.querySelector('.map__pins');
   var mainPinHalfWidth = mainPin.offsetWidth / 2;
   var mainPinHalfHeight = mainPin.offsetHeight / 2;
   var mainPinFullHeight = mainPin.offsetHeight + PIN_POINTER_HEIGHT;
@@ -23,6 +23,9 @@
   var cardTemplate = document.querySelector('#card')
   .content
   .querySelector('.map__card');
+  var errorMessageTemplate = document.querySelector('#error')
+  .content
+  .querySelector('.error');
 
   var setAddressField = function () {
     var mainPinCenterCoords = {
@@ -66,6 +69,7 @@
     pin.querySelector('img').alt = mock.offer.title;
     pin.style.left = (mock.location.x - PIN_HALF_WIDTH) + 'px';
     pin.style.top = (mock.location.y - PIN_HEIGHT) + 'px';
+    pin.setAttribute('hidden', 'true');
 
     pin.addEventListener('click', function () {
       renderCard(mock);
@@ -74,15 +78,15 @@
     return pin;
   };
 
-  var renderPins = function () {
-    var pinFragment = document.createDocumentFragment();
+  // var renderPins = function () {
+  //   var pinFragment = document.createDocumentFragment();
 
-    window.mocks.forEach(function (mock) {
-      var pin = createPin(mock);
-      pinFragment.appendChild(pin);
-    });
-    pins.appendChild(pinFragment);
-  };
+  //   window.mocks.forEach(function (mock) {
+  //     var pin = createPin(mock);
+  //     pinFragment.appendChild(pin);
+  //   });
+  //   pinsContainer.appendChild(pinFragment);
+  // };
 
   var createCard = function (mock) {
     var card = cardTemplate.cloneNode(true);
@@ -141,7 +145,7 @@
   };
 
   var enableMap = function () {
-    renderPins();
+    // renderPins();
     map.classList.remove('map--faded');
     enableFormElements();
   };
@@ -159,13 +163,22 @@
     setAddressField();
   };
 
+  var showPins = function () {
+    var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pins.forEach(function (pin) {
+      pin.removeAttribute('hidden');
+    });
+  };
+
   var mainPinMouseDownHandler = function () {
+    showPins();
     activatePage();
     mainPin.removeEventListener('mousedown', mainPinMouseDownHandler);
   };
 
   var mainPinEnterPressHandler = function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
+      showPins();
       activatePage();
       mainPin.removeEventListener('keydown', mainPinEnterPressHandler);
     }
@@ -174,6 +187,37 @@
   mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
 
   mainPin.addEventListener('keydown', mainPinEnterPressHandler);
+
+  var createErrorMessage = function (error) {
+    var message = errorMessageTemplate.cloneNode(true);
+    var messageText = message.querySelector('.error__message');
+    messageText.textContent = error;
+
+    return message;
+  };
+
+  var renderErrorMessage = function (error) {
+    var main = document.querySelector('main');
+    var errorMessage = createErrorMessage(error);
+
+    main.appendChild(errorMessage);
+  };
+
+  var onError = function (message) {
+    renderErrorMessage(message);
+  };
+
+  var onSuccess = function (data) {
+    var pinFragment = document.createDocumentFragment();
+    var pins = data;
+
+    pins.forEach(function (pin) {
+      pinFragment.appendChild(createPin(pin));
+    });
+    pinsContainer.appendChild(pinFragment);
+  };
+
+  window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
 
   window.map = map;
   window.mainPin = mainPin;
