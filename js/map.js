@@ -63,6 +63,19 @@
     });
   };
 
+  var addPinActiveClass = function (evt, pin) {
+    var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    for (var i = 0; i < pins.length; i += 1) {
+      var pinClass = pins[i].getAttribute('class');
+      if (pinClass.includes('map__pin--active')) {
+        pins[i].setAttribute('class', 'map__pin');
+      }
+    }
+
+    pin.setAttribute('class', 'map__pin map__pin--active');
+  };
+
   var createPin = function (mock) {
     var pin = pinTemplate.cloneNode(true);
     pin.querySelector('img').src = mock.author.avatar;
@@ -71,8 +84,9 @@
     pin.style.top = (mock.location.y - PIN_HEIGHT) + 'px';
     pin.setAttribute('hidden', 'true');
 
-    pin.addEventListener('click', function () {
+    pin.addEventListener('click', function (evt) {
       renderCard(mock);
+      addPinActiveClass(evt, pin);
     });
 
     return pin;
