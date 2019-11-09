@@ -6,6 +6,7 @@
   var PIN_POINTER_HEIGHT = 17;
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
+  var PINS_TO_SHOW = 5;
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
   var filtersForm = document.querySelector('.map__filters');
@@ -18,6 +19,8 @@
   var mainPinHalfWidth = mainPin.offsetWidth / 2;
   var mainPinHalfHeight = mainPin.offsetHeight / 2;
   var mainPinFullHeight = mainPin.offsetHeight + PIN_POINTER_HEIGHT;
+  var pinsArray = [];
+  var pinsFragment = document.createDocumentFragment();
   var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
@@ -91,7 +94,6 @@
     pin.querySelector('img').alt = data.offer.title;
     pin.style.left = (data.location.x - PIN_HALF_WIDTH) + 'px';
     pin.style.top = (data.location.y - PIN_HEIGHT) + 'px';
-    pin.setAttribute('hidden', 'true');
 
     pin.addEventListener('click', function () {
       deleteCard();
@@ -175,18 +177,18 @@
 
   setAddressField();
 
-  var showPins = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  var renderPins = function () {
+    for (var i = 0; i < PINS_TO_SHOW; i += 1) {
+      pinsFragment.appendChild(pinsArray[i]);
+    }
 
-    pins.forEach(function (pin) {
-      pin.removeAttribute('hidden');
-    });
+    pinsContainer.appendChild(pinsFragment);
   };
 
   var activatePage = function () {
     enableMap();
     setAddressField();
-    showPins();
+    renderPins();
   };
 
   var mainPinMouseDownHandler = function () {
@@ -225,13 +227,10 @@
   };
 
   var onSuccess = function (pinsData) {
-    var pinFragment = document.createDocumentFragment();
-
     pinsData.forEach(function (pinData) {
       var pin = createPin(pinData);
-      pinFragment.appendChild(pin);
+      pinsArray.push(pin);
     });
-    pinsContainer.appendChild(pinFragment);
   };
 
   window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
