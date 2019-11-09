@@ -2,6 +2,7 @@
 
 (function () {
   var ENTER_KEYCODE = 13;
+  var ESC_KEYCODE = 27;
   var PIN_POINTER_HEIGHT = 17;
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
@@ -63,7 +64,7 @@
     });
   };
 
-  var addPinActiveClass = function (evt, pin) {
+  var addPinActiveClass = function (pin) {
     var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
 
     for (var i = 0; i < pins.length; i += 1) {
@@ -84,43 +85,51 @@
     }
   };
 
-  var createPin = function (mock) {
+  var createPin = function (data) {
     var pin = pinTemplate.cloneNode(true);
-    pin.querySelector('img').src = mock.author.avatar;
-    pin.querySelector('img').alt = mock.offer.title;
-    pin.style.left = (mock.location.x - PIN_HALF_WIDTH) + 'px';
-    pin.style.top = (mock.location.y - PIN_HEIGHT) + 'px';
+    pin.querySelector('img').src = data.author.avatar;
+    pin.querySelector('img').alt = data.offer.title;
+    pin.style.left = (data.location.x - PIN_HALF_WIDTH) + 'px';
+    pin.style.top = (data.location.y - PIN_HEIGHT) + 'px';
     pin.setAttribute('hidden', 'true');
 
-    pin.addEventListener('click', function (evt) {
+    pin.addEventListener('click', function () {
       deleteCard();
-      renderCard(mock);
-      addPinActiveClass(evt, pin);
+      renderCard(data);
+      addPinActiveClass(pin);
+    });
+
+    pin.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        deleteCard();
+        renderCard(data);
+        addPinActiveClass(pin);
+      }
     });
 
     return pin;
   };
 
-  var createCard = function (mock) {
+  var createCard = function (data) {
     var card = cardTemplate.cloneNode(true);
     var featuresList = card.querySelector('.popup__features');
     var photo = card.querySelector('.popup__photo');
     var photosContainer = card.querySelector('.popup__photos');
-    var photoLinks = mock.offer.photos;
+    var photoLinks = data.offer.photos;
     var cardClose = card.querySelector('.popup__close');
 
-    card.querySelector('.popup__title').textContent = mock.offer.title;
-    card.querySelector('.popup__text--address').textContent = mock.offer.address;
-    card.querySelector('.popup__text--price').textContent = mock.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[mock.offer.type].name;
-    card.querySelector('.popup__text--capacity').textContent = mock.offer.rooms + ' комнаты для ' + mock.offer.guests + ' гостей';
-    card.querySelector('.popup__text--time').textContent = 'Заезд после ' + mock.offer.checkin + ', выезд до ' + mock.offer.checkout;
-    card.querySelector('.popup__description').textContent = mock.offer.description;
-    card.querySelector('.popup__avatar').src = mock.author.avatar;
+    card.querySelector('.popup__title').textContent = data.offer.title;
+    card.querySelector('.popup__text--address').textContent = data.offer.address;
+    card.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
+    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[data.offer.type].name;
+    card.querySelector('.popup__text--capacity').textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
+    card.querySelector('.popup__text--time').textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
+    card.querySelector('.popup__description').textContent = data.offer.description;
+    card.querySelector('.popup__avatar').src = data.author.avatar;
 
     featuresList.innerHTML = '';
 
-    mock.offer.features.forEach(function (feature) {
+    data.offer.features.forEach(function (feature) {
       var featuresItem = document.createElement('LI');
       featuresItem.classList.add('popup__feature');
       featuresItem.classList.add('popup__feature--' + feature);
@@ -140,7 +149,7 @@
     });
 
     document.addEventListener('keydown', function (keyEvt) {
-      if (keyEvt.keyCode === 27) {
+      if (keyEvt.keyCode === ESC_KEYCODE) {
         card.remove();
       }
     });
@@ -148,10 +157,10 @@
     return card;
   };
 
-  var renderCard = function (mock) {
+  var renderCard = function (data) {
     var cardFragment = document.createDocumentFragment();
     var filtersContainer = map.querySelector('.map__filters-container');
-    var card = createCard(mock);
+    var card = createCard(data);
 
     cardFragment.appendChild(card);
     map.insertBefore(cardFragment, filtersContainer);
@@ -215,12 +224,12 @@
     renderErrorMessage(message);
   };
 
-  var onSuccess = function (data) {
+  var onSuccess = function (pinsData) {
     var pinFragment = document.createDocumentFragment();
-    var pins = data;
 
-    pins.forEach(function (pin) {
-      pinFragment.appendChild(createPin(pin));
+    pinsData.forEach(function (pinData) {
+      var pin = createPin(pinData);
+      pinFragment.appendChild(pin);
     });
     pinsContainer.appendChild(pinFragment);
   };

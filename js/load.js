@@ -2,6 +2,7 @@
 
 (function () {
   window.load = function (url, onSuccess, onError) {
+    var TIMEOUT = 2000;
     var xhr = new XMLHttpRequest();
 
     xhr.responseType = 'json';
@@ -13,7 +14,6 @@
         case 200:
           onSuccess(xhr.response);
           break;
-
         case 400:
           error = 'Неверный запрос';
           break;
@@ -23,7 +23,6 @@
         case 404:
           error = 'Ничего не найдено';
           break;
-
         default:
           error = 'Статус ответа: ' + xhr.status + ' ' + xhr.statusText;
       }
@@ -41,7 +40,7 @@
       onError('Запрос не успел выполнится за ' + xhr.timeout + 'мс');
     });
 
-    xhr.timeout = 2000;
+    xhr.timeout = TIMEOUT;
 
     xhr.open('GET', url);
     xhr.send();
