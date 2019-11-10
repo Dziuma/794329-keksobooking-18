@@ -235,6 +235,13 @@
 
   window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
 
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), function (response) {
+      console.log(response);
+    }, onError, 'https://js.dump.academy/keksobooking');
+    evt.preventDefault();
+  });
+
   window.map = map;
   window.mainPin = mainPin;
   window.mainPinFullHeight = mainPinFullHeight;
