@@ -299,6 +299,14 @@
     evt.preventDefault();
   });
 
+  form.addEventListener('reset', function () {
+    removePins();
+    deleteCard();
+    moveMainPinToStartPosition();
+    setAddressField();
+    resetPriceField();
+  });
+
   window.map = map;
   window.mainPin = mainPin;
   window.mainPinFullHeight = mainPinFullHeight;
