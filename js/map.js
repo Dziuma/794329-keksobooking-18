@@ -11,6 +11,7 @@
     left: 570,
     top: 375
   };
+  var APARTMENT_PRICE_START_PLACEHOLDER = document.querySelector('#price').placeholder;
   var main = document.querySelector('main');
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
@@ -220,36 +221,38 @@
     var messageText = message.querySelector('.error__message');
     messageText.textContent = error;
 
+    return message;
+  };
+
+  var renderErrorMessage = function (message) {
+    var errorMessage = createErrorMessage(message);
+    main.appendChild(errorMessage);
+
+    var error = document.querySelector('.error');
     document.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
-        document.querySelector('.error').remove();
+        error.remove();
       }
     });
 
     document.addEventListener('click', function () {
-      document.querySelector('.error').remove();
+      error.remove();
     });
-
-    return message;
-  };
-
-  var renderErrorMessage = function (error) {
-    var errorMessage = createErrorMessage(error);
-    main.appendChild(errorMessage);
   };
 
   var renderSuccessMessage = function () {
     var successMessage = successMessageTemplate.cloneNode(true);
     main.appendChild(successMessage);
 
+    var success = document.querySelector('.success');
     document.addEventListener('keydown', function (evt) {
       if (evt.keyCode === ESC_KEYCODE) {
-        document.querySelector('.success').remove();
+        success.remove();
       }
     });
 
     document.addEventListener('click', function () {
-      document.querySelector('.success').remove();
+      success.remove();
     });
   };
 
@@ -276,6 +279,11 @@
     mainPin.style.top = MAIN_PIN_START_COORDS.top + 'px';
   };
 
+  var resetPriceField = function () {
+    window.apartmentPrice.placeholder = APARTMENT_PRICE_START_PLACEHOLDER;
+    window.apartmentPrice.setAttribute('min', window.OFFERS_CONFIG[window.apartmentType.value].minCost);
+  };
+
   window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
 
   form.addEventListener('submit', function (evt) {
@@ -285,6 +293,7 @@
       deleteCard();
       moveMainPinToStartPosition();
       setAddressField();
+      resetPriceField();
       renderSuccessMessage();
     }, onError, 'https://js.dump.academy/keksobooking');
     evt.preventDefault();
