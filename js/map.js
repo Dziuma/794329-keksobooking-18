@@ -11,6 +11,7 @@
     left: 570,
     top: 375
   };
+  var main = document.querySelector('main');
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
   var filtersForm = document.querySelector('.map__filters');
@@ -34,6 +35,9 @@
   var errorMessageTemplate = document.querySelector('#error')
   .content
   .querySelector('.error');
+  var successMessageTemplate = document.querySelector('#success')
+  .content
+  .querySelector('.success');
 
   var setAddressField = function () {
     var mainPinCenterCoords = {
@@ -216,14 +220,37 @@
     var messageText = message.querySelector('.error__message');
     messageText.textContent = error;
 
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        document.querySelector('.error').remove();
+      }
+    });
+
+    document.addEventListener('click', function () {
+      document.querySelector('.error').remove();
+    });
+
     return message;
   };
 
   var renderErrorMessage = function (error) {
-    var main = document.querySelector('main');
     var errorMessage = createErrorMessage(error);
-
     main.appendChild(errorMessage);
+  };
+
+  var renderSuccessMessage = function () {
+    var successMessage = successMessageTemplate.cloneNode(true);
+    main.appendChild(successMessage);
+
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        document.querySelector('.success').remove();
+      }
+    });
+
+    document.addEventListener('click', function () {
+      document.querySelector('.success').remove();
+    });
   };
 
   var onError = function (message) {
@@ -255,8 +282,10 @@
     window.upload(new FormData(form), function () {
       form.reset();
       removePins();
+      deleteCard();
       moveMainPinToStartPosition();
       setAddressField();
+      renderSuccessMessage();
     }, onError, 'https://js.dump.academy/keksobooking');
     evt.preventDefault();
   });
