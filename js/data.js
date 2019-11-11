@@ -140,8 +140,9 @@
     return mocks;
   };
 
-  var mocks = generateMocks();
+  generateMocks();
 
-  window.OFFERS_CONFIG = OFFERS_CONFIG;
-  window.mocks = mocks;
+  window.data = {
+    OFFERS_CONFIG: OFFERS_CONFIG,
+  };
 })();

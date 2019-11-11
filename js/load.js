@@ -56,11 +56,16 @@
     }
   };
 
-  window.load = function (url, onSuccess, onError) {
+  var load = function (url, onSuccess, onError) {
     createXHR('GET', url, onSuccess, onError);
   };
 
-  window.upload = function (url, onSuccess, onError, data) {
+  var upload = function (url, onSuccess, onError, data) {
     createXHR('POST', url, onSuccess, onError, data);
+  };
+
+  window.load = {
+    load: load,
+    upload: upload
   };
 })();

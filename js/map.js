@@ -132,7 +132,7 @@
     card.querySelector('.popup__title').textContent = data.offer.title;
     card.querySelector('.popup__text--address').textContent = data.offer.address;
     card.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[data.offer.type].name;
+    card.querySelector('.popup__type').textContent = window.data.OFFERS_CONFIG[data.offer.type].name;
     card.querySelector('.popup__text--capacity').textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
     card.querySelector('.popup__description').textContent = data.offer.description;
@@ -187,9 +187,9 @@
   setAddressField();
 
   var renderPins = function (array) {
-    for (var i = 0; i < PINS_TO_SHOW; i += 1) {
-      pinsFragment.appendChild(array[i]);
-    }
+    array.forEach(function (item) {
+      pinsFragment.appendChild(item);
+    });
 
     pinsContainer.appendChild(pinsFragment);
   };
@@ -203,12 +203,14 @@
   var mainPinMouseDownHandler = function () {
     activatePage();
     mainPin.removeEventListener('mousedown', mainPinMouseDownHandler);
+    mainPin.removeEventListener('keydown', mainPinEnterPressHandler);
   };
 
   var mainPinEnterPressHandler = function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
       activatePage();
       mainPin.removeEventListener('keydown', mainPinEnterPressHandler);
+      mainPin.removeEventListener('mousedown', mainPinMouseDownHandler);
     }
   };
 
@@ -261,10 +263,12 @@
   };
 
   var onSuccessLoad = function (pinsData) {
-    window.loadedPinsData = pinsData;
+    window.map.loadedPinsData = pinsData;
     pinsData.forEach(function (pinData) {
       var pin = createPin(pinData);
-      pinsArray.push(pin);
+      if (pinsArray.length < PINS_TO_SHOW) {
+        pinsArray.push(pin);
+      }
     });
   };
 
@@ -291,15 +295,15 @@
   };
 
   var resetPriceField = function () {
-    window.apartmentPrice.placeholder = APARTMENT_PRICE_START_PLACEHOLDER;
-    window.apartmentPrice.setAttribute('min', window.OFFERS_CONFIG[window.apartmentType.value].minCost);
+    window.validateForm.apartmentPrice.placeholder = APARTMENT_PRICE_START_PLACEHOLDER;
+    window.validateForm.apartmentPrice.setAttribute('min', window.data.OFFERS_CONFIG[window.validateForm.apartmentType.value].minCost);
   };
 
-  window.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
+  window.load.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.upload('https://js.dump.academy/keksobooking', onSuccessUpload, onError, new FormData(form));
+    window.load.upload('https://js.dump.academy/keksobooking', onSuccessUpload, onError, new FormData(form));
   });
 
   form.addEventListener('reset', function () {
@@ -310,8 +314,16 @@
     resetPriceField();
   });
 
-  window.map = map;
-  window.mainPin = mainPin;
-  window.mainPinFullHeight = mainPinFullHeight;
-  window.setAddressField = setAddressField;
+  window.map = {
+    PINS_TO_SHOW: PINS_TO_SHOW,
+    map: map,
+    mainPin: mainPin,
+    mainPinFullHeight: mainPinFullHeight,
+    setAddressField: setAddressField,
+    removePins: removePins,
+    pinsFragment: pinsFragment,
+    pinsContainer: pinsContainer,
+    createPin: createPin,
+    renderPins: renderPins
+  };
 })();

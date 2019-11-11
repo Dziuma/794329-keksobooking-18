@@ -72,6 +72,8 @@
     checkin.selectedIndex = target.selectedIndex;
   });
 
-  window.apartmentPrice = apartmentPrice;
-  window.apartmentType = apartmentType;
+  window.validateForm = {
+    apartmentPrice: apartmentPrice,
+    apartmentType: apartmentType
+  };
 })();
