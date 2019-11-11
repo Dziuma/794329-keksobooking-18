@@ -2,9 +2,17 @@
 
 (function () {
   var ENTER_KEYCODE = 13;
+  var ESC_KEYCODE = 27;
   var PIN_POINTER_HEIGHT = 17;
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
+  var PINS_TO_SHOW = 5;
+  var MainPinStartCoords = {
+    left: 570,
+    top: 375
+  };
+  var APARTMENT_PRICE_START_PLACEHOLDER = document.querySelector('#price').placeholder;
+  var main = document.querySelector('main');
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
   var filtersForm = document.querySelector('.map__filters');
@@ -13,16 +21,24 @@
   var formFieldsets = document.querySelectorAll('fieldset');
   var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
   var addressField = form.querySelector('#address');
-  var pins = document.querySelector('.map__pins');
+  var pinsContainer = document.querySelector('.map__pins');
   var mainPinHalfWidth = mainPin.offsetWidth / 2;
   var mainPinHalfHeight = mainPin.offsetHeight / 2;
   var mainPinFullHeight = mainPin.offsetHeight + PIN_POINTER_HEIGHT;
+  var pinsArray = [];
+  var pinsFragment = document.createDocumentFragment();
   var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
   var cardTemplate = document.querySelector('#card')
   .content
   .querySelector('.map__card');
+  var errorMessageTemplate = document.querySelector('#error')
+  .content
+  .querySelector('.error');
+  var successMessageTemplate = document.querySelector('#success')
+  .content
+  .querySelector('.success');
 
   var setAddressField = function () {
     var mainPinCenterCoords = {
@@ -60,50 +76,71 @@
     });
   };
 
-  var createPin = function (mock) {
+  var addPinActiveClass = function (pin) {
+    var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    pins.forEach(function (element) {
+      var pinClass = element.getAttribute('class');
+      if (pinClass.includes('map__pin--active')) {
+        element.setAttribute('class', 'map__pin');
+      }
+    });
+
+    pin.setAttribute('class', 'map__pin map__pin--active');
+  };
+
+  var deleteCard = function () {
+    var card = document.querySelector('.map__card');
+
+    if (card) {
+      card.remove();
+    }
+  };
+
+  var createPin = function (data) {
     var pin = pinTemplate.cloneNode(true);
-    pin.querySelector('img').src = mock.author.avatar;
-    pin.querySelector('img').alt = mock.offer.title;
-    pin.style.left = (mock.location.x - PIN_HALF_WIDTH) + 'px';
-    pin.style.top = (mock.location.y - PIN_HEIGHT) + 'px';
+    pin.querySelector('img').src = data.author.avatar;
+    pin.querySelector('img').alt = data.offer.title;
+    pin.style.left = (data.location.x - PIN_HALF_WIDTH) + 'px';
+    pin.style.top = (data.location.y - PIN_HEIGHT) + 'px';
 
     pin.addEventListener('click', function () {
-      renderCard(mock);
+      deleteCard();
+      renderCard(data);
+      addPinActiveClass(pin);
+    });
+
+    pin.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        deleteCard();
+        renderCard(data);
+        addPinActiveClass(pin);
+      }
     });
 
     return pin;
   };
 
-  var renderPins = function () {
-    var pinFragment = document.createDocumentFragment();
-
-    window.mocks.forEach(function (mock) {
-      var pin = createPin(mock);
-      pinFragment.appendChild(pin);
-    });
-    pins.appendChild(pinFragment);
-  };
-
-  var createCard = function (mock) {
+  var createCard = function (data) {
     var card = cardTemplate.cloneNode(true);
     var featuresList = card.querySelector('.popup__features');
     var photo = card.querySelector('.popup__photo');
     var photosContainer = card.querySelector('.popup__photos');
-    var photoLinks = mock.offer.photos;
+    var photoLinks = data.offer.photos;
     var cardClose = card.querySelector('.popup__close');
 
-    card.querySelector('.popup__title').textContent = mock.offer.title;
-    card.querySelector('.popup__text--address').textContent = mock.offer.address;
-    card.querySelector('.popup__text--price').textContent = mock.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[mock.offer.type].name;
-    card.querySelector('.popup__text--capacity').textContent = mock.offer.rooms + ' комнаты для ' + mock.offer.guests + ' гостей';
-    card.querySelector('.popup__text--time').textContent = 'Заезд после ' + mock.offer.checkin + ', выезд до ' + mock.offer.checkout;
-    card.querySelector('.popup__description').textContent = mock.offer.description;
-    card.querySelector('.popup__avatar').src = mock.author.avatar;
+    card.querySelector('.popup__title').textContent = data.offer.title;
+    card.querySelector('.popup__text--address').textContent = data.offer.address;
+    card.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
+    card.querySelector('.popup__type').textContent = window.OFFERS_CONFIG[data.offer.type].name;
+    card.querySelector('.popup__text--capacity').textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
+    card.querySelector('.popup__text--time').textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
+    card.querySelector('.popup__description').textContent = data.offer.description;
+    card.querySelector('.popup__avatar').src = data.author.avatar;
 
     featuresList.innerHTML = '';
 
-    mock.offer.features.forEach(function (feature) {
+    data.offer.features.forEach(function (feature) {
       var featuresItem = document.createElement('LI');
       featuresItem.classList.add('popup__feature');
       featuresItem.classList.add('popup__feature--' + feature);
@@ -119,29 +156,28 @@
     }
 
     cardClose.addEventListener('click', function () {
-      removeElement(card);
+      card.remove();
     });
 
     document.addEventListener('keydown', function (keyEvt) {
-      if (keyEvt.keyCode === 27) {
-        removeElement(card);
+      if (keyEvt.keyCode === ESC_KEYCODE) {
+        card.remove();
       }
     });
 
     return card;
   };
 
-  var renderCard = function (mock) {
+  var renderCard = function (data) {
     var cardFragment = document.createDocumentFragment();
     var filtersContainer = map.querySelector('.map__filters-container');
-    var card = createCard(mock);
+    var card = createCard(data);
 
     cardFragment.appendChild(card);
     map.insertBefore(cardFragment, filtersContainer);
   };
 
   var enableMap = function () {
-    renderPins();
     map.classList.remove('map--faded');
     enableFormElements();
   };
@@ -150,13 +186,18 @@
 
   setAddressField();
 
-  var removeElement = function (element) {
-    element.remove();
+  var renderPins = function (array) {
+    for (var i = 0; i < PINS_TO_SHOW; i += 1) {
+      pinsFragment.appendChild(array[i]);
+    }
+
+    pinsContainer.appendChild(pinsFragment);
   };
 
   var activatePage = function () {
     enableMap();
     setAddressField();
+    renderPins(pinsArray);
   };
 
   var mainPinMouseDownHandler = function () {
@@ -174,6 +215,100 @@
   mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
 
   mainPin.addEventListener('keydown', mainPinEnterPressHandler);
+
+  var createErrorMessage = function (error) {
+    var message = errorMessageTemplate.cloneNode(true);
+    var messageText = message.querySelector('.error__message');
+    messageText.textContent = error;
+
+    return message;
+  };
+
+  var renderErrorMessage = function (message) {
+    var errorMessage = createErrorMessage(message);
+    main.appendChild(errorMessage);
+
+    var error = document.querySelector('.error');
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        error.remove();
+      }
+    });
+
+    document.addEventListener('click', function () {
+      error.remove();
+    });
+  };
+
+  var renderSuccessMessage = function () {
+    var successMessage = successMessageTemplate.cloneNode(true);
+    main.appendChild(successMessage);
+
+    var success = document.querySelector('.success');
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        success.remove();
+      }
+    });
+
+    document.addEventListener('click', function () {
+      success.remove();
+    });
+  };
+
+  var onError = function (message) {
+    renderErrorMessage(message);
+  };
+
+  var onSuccessLoad = function (pinsData) {
+    window.loadedPinsData = pinsData;
+    pinsData.forEach(function (pinData) {
+      var pin = createPin(pinData);
+      pinsArray.push(pin);
+    });
+  };
+
+  var onSuccessUpload = function () {
+    form.reset();
+    removePins();
+    deleteCard();
+    moveMainPinToStartPosition();
+    setAddressField();
+    resetPriceField();
+    renderSuccessMessage();
+  };
+
+  var removePins = function () {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
+  };
+
+  var moveMainPinToStartPosition = function () {
+    mainPin.style.left = MainPinStartCoords.left + 'px';
+    mainPin.style.top = MainPinStartCoords.top + 'px';
+  };
+
+  var resetPriceField = function () {
+    window.apartmentPrice.placeholder = APARTMENT_PRICE_START_PLACEHOLDER;
+    window.apartmentPrice.setAttribute('min', window.OFFERS_CONFIG[window.apartmentType.value].minCost);
+  };
+
+  window.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.upload('https://js.dump.academy/keksobooking', onSuccessUpload, onError, new FormData(form));
+  });
+
+  form.addEventListener('reset', function () {
+    removePins();
+    deleteCard();
+    moveMainPinToStartPosition();
+    setAddressField();
+    resetPriceField();
+  });
 
   window.map = map;
   window.mainPin = mainPin;

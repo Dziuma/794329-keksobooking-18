@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var MIN_COORD_Y = 130;
+  var MAX_COORD_Y = 630;
   var mainPin = window.mainPin;
   var map = window.map;
   var shift = {
@@ -16,23 +18,23 @@
 
     if (draggableCoords.x < -draggable.offsetWidth / 2) {
       draggableCoords.x = -draggable.offsetWidth / 2;
-      if (draggableCoords.y < 0) {
-        draggableCoords.y = 0;
-      } else if (draggableCoords.y > draggableParent.offsetHeight - window.mainPinFullHeight) {
-        draggableCoords.y = draggableParent.offsetHeight - window.mainPinFullHeight;
+      if (draggableCoords.y < MIN_COORD_Y - window.mainPinFullHeight) {
+        draggableCoords.y = MIN_COORD_Y - window.mainPinFullHeight;
+      } else if (draggableCoords.y > MAX_COORD_Y - window.mainPinFullHeight) {
+        draggableCoords.y = MAX_COORD_Y - window.mainPinFullHeight;
       }
-    } else if (draggableCoords.y < 0) {
-      draggableCoords.y = 0;
+    } else if (draggableCoords.y < MIN_COORD_Y - window.mainPinFullHeight) {
+      draggableCoords.y = MIN_COORD_Y - window.mainPinFullHeight;
       if (draggableCoords.x > draggableParent.offsetWidth - draggable.offsetWidth / 2) {
         draggableCoords.x = draggableParent.offsetWidth - draggable.offsetWidth / 2;
       }
     } else if (draggableCoords.x > draggableParent.offsetWidth - draggable.offsetWidth / 2) {
       draggableCoords.x = draggableParent.offsetWidth - draggable.offsetWidth / 2;
-      if (draggableCoords.y > draggableParent.offsetHeight - window.mainPinFullHeight) {
-        draggableCoords.y = draggableParent.offsetHeight - window.mainPinFullHeight;
+      if (draggableCoords.y > MAX_COORD_Y - window.mainPinFullHeight) {
+        draggableCoords.y = MAX_COORD_Y - window.mainPinFullHeight;
       }
-    } else if (draggableCoords.y > draggableParent.offsetHeight - window.mainPinFullHeight) {
-      draggableCoords.y = draggableParent.offsetHeight - window.mainPinFullHeight;
+    } else if (draggableCoords.y > MAX_COORD_Y - window.mainPinFullHeight) {
+      draggableCoords.y = MAX_COORD_Y - window.mainPinFullHeight;
     }
 
     draggable.style.left = draggableCoords.x + 'px';
@@ -53,8 +55,8 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  var onMouseMove = function (moveEvt) {
-    moveTo(moveEvt, mainPin, map);
+  var onMouseMove = function (evt) {
+    moveTo(evt, mainPin, map);
   };
 
   var onMouseUp = function (evt) {
