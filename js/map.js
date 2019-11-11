@@ -7,7 +7,7 @@
   var PIN_HALF_WIDTH = 25;
   var PIN_HEIGHT = 70;
   var PINS_TO_SHOW = 5;
-  var MAIN_PIN_START_COORDS = {
+  var MainPinStartCoords = {
     left: 570,
     top: 375
   };
@@ -79,12 +79,12 @@
   var addPinActiveClass = function (pin) {
     var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
 
-    for (var i = 0; i < pins.length; i += 1) {
-      var pinClass = pins[i].getAttribute('class');
+    pins.forEach(function (element) {
+      var pinClass = element.getAttribute('class');
       if (pinClass.includes('map__pin--active')) {
-        pins[i].setAttribute('class', 'map__pin');
+        element.setAttribute('class', 'map__pin');
       }
-    }
+    });
 
     pin.setAttribute('class', 'map__pin map__pin--active');
   };
@@ -186,9 +186,9 @@
 
   setAddressField();
 
-  var renderPins = function () {
+  var renderPins = function (array) {
     for (var i = 0; i < PINS_TO_SHOW; i += 1) {
-      pinsFragment.appendChild(pinsArray[i]);
+      pinsFragment.appendChild(array[i]);
     }
 
     pinsContainer.appendChild(pinsFragment);
@@ -197,7 +197,7 @@
   var activatePage = function () {
     enableMap();
     setAddressField();
-    renderPins();
+    renderPins(pinsArray);
   };
 
   var mainPinMouseDownHandler = function () {
@@ -260,11 +260,22 @@
     renderErrorMessage(message);
   };
 
-  var onSuccess = function (pinsData) {
+  var onSuccessLoad = function (pinsData) {
+    window.loadedPinsData = pinsData;
     pinsData.forEach(function (pinData) {
       var pin = createPin(pinData);
       pinsArray.push(pin);
     });
+  };
+
+  var onSuccessUpload = function () {
+    form.reset();
+    removePins();
+    deleteCard();
+    moveMainPinToStartPosition();
+    setAddressField();
+    resetPriceField();
+    renderSuccessMessage();
   };
 
   var removePins = function () {
@@ -275,8 +286,8 @@
   };
 
   var moveMainPinToStartPosition = function () {
-    mainPin.style.left = MAIN_PIN_START_COORDS.left + 'px';
-    mainPin.style.top = MAIN_PIN_START_COORDS.top + 'px';
+    mainPin.style.left = MainPinStartCoords.left + 'px';
+    mainPin.style.top = MainPinStartCoords.top + 'px';
   };
 
   var resetPriceField = function () {
@@ -284,19 +295,11 @@
     window.apartmentPrice.setAttribute('min', window.OFFERS_CONFIG[window.apartmentType.value].minCost);
   };
 
-  window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
+  window.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
 
   form.addEventListener('submit', function (evt) {
-    window.upload(new FormData(form), function () {
-      form.reset();
-      removePins();
-      deleteCard();
-      moveMainPinToStartPosition();
-      setAddressField();
-      resetPriceField();
-      renderSuccessMessage();
-    }, onError, 'https://js.dump.academy/keksobooking');
     evt.preventDefault();
+    window.upload('https://js.dump.academy/keksobooking', onSuccessUpload, onError, new FormData(form));
   });
 
   form.addEventListener('reset', function () {
