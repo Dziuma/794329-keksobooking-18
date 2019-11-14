@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500;
   var PINS_TO_SHOW = window.map.PINS_TO_SHOW;
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
@@ -9,6 +10,20 @@
   var filterRooms = document.querySelector('#housing-rooms');
   var filterGuests = document.querySelector('#housing-guests');
   var filters = document.querySelectorAll('.map__filter, .map__checkbox');
+
+  var debounce = function (cb) {
+    var lastTimeout = null;
+
+    return function () {
+      var parameters = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        cb.apply(null, parameters);
+      }, DEBOUNCE_INTERVAL);
+    };
+  };
 
   var matchesType = function (pinData, type) {
     return type === 'any' || pinData.offer.type === type;
@@ -55,7 +70,7 @@
     return filteredData;
   };
 
-  var filterChangeHandler = function () {
+  var filterChangeHandler = debounce(function () {
     var config = {
       type: filterType.value,
       price: filterPrice.value,
@@ -73,7 +88,7 @@
 
     window.map.removePins();
     window.map.renderPins(pins);
-  };
+  });
 
   filters.forEach(function (item) {
     item.addEventListener('change', filterChangeHandler);
