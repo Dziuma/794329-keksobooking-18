@@ -195,9 +195,9 @@
   };
 
   var activatePage = function () {
+    window.load.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
     enableMap();
     setAddressField();
-    renderPins(pinsArray);
   };
 
   var mainPinMouseDownHandler = function () {
@@ -270,6 +270,7 @@
         pinsArray.push(pin);
       }
     });
+    renderPins(pinsArray);
   };
 
   var onSuccessUpload = function () {
@@ -298,8 +299,6 @@
     window.validateForm.apartmentPrice.placeholder = APARTMENT_PRICE_START_PLACEHOLDER;
     window.validateForm.apartmentPrice.setAttribute('min', window.data.OFFERS_CONFIG[window.validateForm.apartmentType.value].minCost);
   };
-
-  window.load.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
