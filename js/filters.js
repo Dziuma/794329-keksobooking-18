@@ -75,6 +75,7 @@
 
     window.map.removePins();
     window.map.renderPins(pins);
+    window.map.deleteCard();
   });
 
   filters.forEach(function (filter) {

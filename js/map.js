@@ -182,6 +182,15 @@
     enableFormElements();
   };
 
+  var disableMap = function () {
+    map.classList.add('map--faded');
+    form.classList.add('ad-form--disabled');
+    disableFormElements();
+    setAddressField();
+    mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
+    mainPin.addEventListener('keydown', mainPinEnterPressHandler);
+  };
+
   disableFormElements();
 
   setAddressField();
@@ -198,6 +207,16 @@
     window.load.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
     enableMap();
     setAddressField();
+  };
+
+  var deacivatePage = function () {
+    removePins();
+    deleteCard();
+    moveMainPinToStartPosition();
+    setAddressField();
+    resetPriceField();
+    disableMap();
+    filtersForm.reset();
   };
 
   var mainPinMouseDownHandler = function () {
@@ -275,11 +294,7 @@
 
   var onSuccessUpload = function () {
     form.reset();
-    removePins();
-    deleteCard();
-    moveMainPinToStartPosition();
-    setAddressField();
-    resetPriceField();
+    deacivatePage();
     renderSuccessMessage();
   };
 
@@ -306,11 +321,7 @@
   });
 
   form.addEventListener('reset', function () {
-    removePins();
-    deleteCard();
-    moveMainPinToStartPosition();
-    setAddressField();
-    resetPriceField();
+    deacivatePage();
   });
 
   window.map = {
@@ -319,10 +330,11 @@
     mainPin: mainPin,
     mainPinFullHeight: mainPinFullHeight,
     setAddressField: setAddressField,
-    removePins: removePins,
     pinsFragment: pinsFragment,
     pinsContainer: pinsContainer,
     createPin: createPin,
-    renderPins: renderPins
+    renderPins: renderPins,
+    removePins: removePins,
+    deleteCard: deleteCard
   };
 })();
