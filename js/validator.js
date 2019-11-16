@@ -50,8 +50,8 @@
   });
 
   var setMinPrice = function () {
-    apartmentPrice.setAttribute('min', window.data.OFFERS_CONFIG[apartmentType.value].minCost);
-    apartmentPrice.setAttribute('placeholder', window.data.OFFERS_CONFIG[apartmentType.value].minCost);
+    apartmentPrice.setAttribute('min', window.config.OFFERS_CONFIG[apartmentType.value].minCost);
+    apartmentPrice.setAttribute('placeholder', window.config.OFFERS_CONFIG[apartmentType.value].minCost);
   };
 
   apartmentType.addEventListener('input', function () {
@@ -70,7 +70,7 @@
     checkin.selectedIndex = target.selectedIndex;
   });
 
-  window.validateForm = {
+  window.validator = {
     apartmentPrice: apartmentPrice,
     apartmentType: apartmentType
   };

@@ -2,6 +2,12 @@
 
 (function () {
   var TIMEOUT = 2000;
+  var StatusCode = {
+    SUCCESS: 200,
+    BAD_REQUEST_ERROR: 400,
+    UNAUTHORIZED_ERROR: 401,
+    NOT_FOUND_ERROR: 404
+  };
 
   var createXHR = function (method, url, onSuccess, onError, data) {
     var xhr = new XMLHttpRequest();
@@ -12,16 +18,16 @@
       var error;
 
       switch (xhr.status) {
-        case 200:
+        case StatusCode.SUCCESS:
           onSuccess(xhr.response);
           break;
-        case 400:
+        case StatusCode.BAD_REQUEST_ERROR:
           error = 'Неверный запрос';
           break;
-        case 401:
+        case StatusCode.UNAUTHORIZED_ERROR:
           error = 'Пользователь не авторизован';
           break;
-        case 404:
+        case StatusCode.NOT_FOUND_ERROR:
           error = 'Ничего не найдено';
           break;
         default:
@@ -64,7 +70,7 @@
     createXHR('POST', url, onSuccess, onError, data);
   };
 
-  window.load = {
+  window.backend = {
     load: load,
     upload: upload
   };
