@@ -30,8 +30,6 @@
       message = 'Этот дворец не для гостей.';
     } else if (rooms !== '100' && guests === '0') {
       message = 'Не для гостей только дворец.';
-    } else if (rooms !== '100' && rooms > guests) {
-      message = 'Количество комнат не должно превышать количества гостей.';
     }
 
     return message;
@@ -52,8 +50,8 @@
   });
 
   var setMinPrice = function () {
-    apartmentPrice.setAttribute('min', window.OFFERS_CONFIG[apartmentType.value].minCost);
-    apartmentPrice.setAttribute('placeholder', window.OFFERS_CONFIG[apartmentType.value].minCost);
+    apartmentPrice.setAttribute('min', window.data.OFFERS_CONFIG[apartmentType.value].minCost);
+    apartmentPrice.setAttribute('placeholder', window.data.OFFERS_CONFIG[apartmentType.value].minCost);
   };
 
   apartmentType.addEventListener('input', function () {

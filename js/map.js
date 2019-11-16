@@ -182,6 +182,15 @@
     enableFormElements();
   };
 
+  var disableMap = function () {
+    map.classList.add('map--faded');
+    form.classList.add('ad-form--disabled');
+    disableFormElements();
+    setAddressField();
+    mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
+    mainPin.addEventListener('keydown', mainPinEnterPressHandler);
+  };
+
   disableFormElements();
 
   setAddressField();
@@ -195,9 +204,19 @@
   };
 
   var activatePage = function () {
+    window.load.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
     enableMap();
     setAddressField();
-    renderPins(pinsArray);
+  };
+
+  var deacivatePage = function () {
+    removePins();
+    deleteCard();
+    moveMainPinToStartPosition();
+    setAddressField();
+    resetPriceField();
+    disableMap();
+    filtersForm.reset();
   };
 
   var mainPinMouseDownHandler = function () {
@@ -270,15 +289,12 @@
         pinsArray.push(pin);
       }
     });
+    renderPins(pinsArray);
   };
 
   var onSuccessUpload = function () {
     form.reset();
-    removePins();
-    deleteCard();
-    moveMainPinToStartPosition();
-    setAddressField();
-    resetPriceField();
+    deacivatePage();
     renderSuccessMessage();
   };
 
@@ -299,19 +315,13 @@
     window.validateForm.apartmentPrice.setAttribute('min', window.data.OFFERS_CONFIG[window.validateForm.apartmentType.value].minCost);
   };
 
-  window.load.load('https://js.dump.academy/keksobooking/data', onSuccessLoad, onError);
-
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.load.upload('https://js.dump.academy/keksobooking', onSuccessUpload, onError, new FormData(form));
   });
 
   form.addEventListener('reset', function () {
-    removePins();
-    deleteCard();
-    moveMainPinToStartPosition();
-    setAddressField();
-    resetPriceField();
+    deacivatePage();
   });
 
   window.map = {
@@ -320,10 +330,11 @@
     mainPin: mainPin,
     mainPinFullHeight: mainPinFullHeight,
     setAddressField: setAddressField,
-    removePins: removePins,
     pinsFragment: pinsFragment,
     pinsContainer: pinsContainer,
     createPin: createPin,
-    renderPins: renderPins
+    renderPins: renderPins,
+    removePins: removePins,
+    deleteCard: deleteCard
   };
 })();
