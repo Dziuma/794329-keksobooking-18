@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var TIMEOUT = 2000;
+  var TIMEOUT = 5000;
   var StatusCode = {
     SUCCESS: 200,
     BAD_REQUEST_ERROR: 400,

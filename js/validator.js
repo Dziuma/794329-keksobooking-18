@@ -2,12 +2,30 @@
 
 (function () {
   var form = document.querySelector('.ad-form');
+  var title = form.querySelector('#title');
   var roomNumber = form.querySelector('#room_number');
   var capacity = form.querySelector('#capacity');
   var apartmentType = form.querySelector('#type');
   var apartmentPrice = form.querySelector('#price');
   var checkin = form.querySelector('#timein');
   var checkout = form.querySelector('#timeout');
+
+  var invalidHandler = function (evt) {
+    var target = evt.target;
+    target.style.boxShadow = '0 0 2px 2px #ff6547';
+    target.addEventListener('input', window.utils.debounce(function () {
+      if (target.reportValidity()) {
+        if (target.hasAttribute('style')) {
+          target.removeAttribute('style');
+        }
+      }
+    }));
+  };
+
+  title.addEventListener('invalid', invalidHandler);
+  apartmentPrice.addEventListener('invalid', invalidHandler);
+  roomNumber.addEventListener('invalid', invalidHandler);
+  capacity.addEventListener('invalid', invalidHandler);
 
   var validateGuestsInput = function (rooms, guests) {
     var message = '';
@@ -53,6 +71,8 @@
     apartmentPrice.setAttribute('min', window.config.OFFERS_CONFIG[apartmentType.value].minCost);
     apartmentPrice.setAttribute('placeholder', window.config.OFFERS_CONFIG[apartmentType.value].minCost);
   };
+
+  setMinPrice();
 
   apartmentType.addEventListener('input', function () {
     setMinPrice();
