@@ -4,16 +4,16 @@
   var PIN_POINTER_HEIGHT = 17;
   var PINS_TO_SHOW = 5;
   var MainPinStartCoords = {
-    left: 570,
-    top: 375
+    LEFT: 570,
+    TOP: 375
   };
-  var APARTMENT_PRICE_START_PLACEHOLDER = document.querySelector('#price').placeholder;
+  var priceStartPlaceholder = document.querySelector('#price').placeholder;
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
   var filtersForm = document.querySelector('.map__filters');
   var form = document.querySelector('.ad-form');
   var filters = filtersForm.querySelectorAll('.map__filter');
-  var formFieldsets = document.querySelectorAll('fieldset');
+  var formFieldsets = form.querySelectorAll('fieldset');
   var formElements = Array.prototype.concat.apply([], [filters, formFieldsets]);
   var addressField = form.querySelector('#address');
   var mainPinHalfWidth = mainPin.offsetWidth / 2;
@@ -32,7 +32,6 @@
     };
 
     var isActive = !map.classList.contains('map--faded');
-
     if (isActive) {
       addressField.value = mainPinPointerCoords.x + ', ' + mainPinPointerCoords.y;
     } else {
@@ -48,6 +47,18 @@
     });
   };
 
+  var disableFilters = function () {
+    Array.from(filtersForm.children).forEach(function (child) {
+      child.setAttribute('disabled', true);
+    });
+  };
+
+  var enableFilters = function () {
+    Array.from(filtersForm.children).forEach(function (child) {
+      child.removeAttribute('disabled');
+    });
+  };
+
   var enableFormElements = function () {
     form.classList.remove('ad-form--disabled');
     formElements.forEach(function (element) {
@@ -60,13 +71,14 @@
   var enableMap = function () {
     map.classList.remove('map--faded');
     enableFormElements();
+    disableFilters();
   };
 
   var disableMap = function () {
     map.classList.add('map--faded');
     form.classList.add('ad-form--disabled');
-    disableFormElements();
     setAddressField();
+    disableFormElements();
     mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
     mainPin.addEventListener('keydown', mainPinEnterPressHandler);
   };
@@ -83,7 +95,7 @@
 
   var deacivatePage = function () {
     window.pin.removePins();
-    window.card.deleteCard();
+    window.advert.deleteCard();
     moveMainPinToStartPosition();
     setAddressField();
     resetPriceField();
@@ -122,6 +134,7 @@
       }
     });
     window.pin.renderPins(pinsArray);
+    enableFilters();
   };
 
   var onSuccessUpload = function () {
@@ -131,12 +144,12 @@
   };
 
   var moveMainPinToStartPosition = function () {
-    mainPin.style.left = MainPinStartCoords.left + 'px';
-    mainPin.style.top = MainPinStartCoords.top + 'px';
+    mainPin.style.left = MainPinStartCoords.LEFT + 'px';
+    mainPin.style.top = MainPinStartCoords.TOP + 'px';
   };
 
   var resetPriceField = function () {
-    window.validator.apartmentPrice.placeholder = APARTMENT_PRICE_START_PLACEHOLDER;
+    window.validator.apartmentPrice.placeholder = priceStartPlaceholder;
     window.validator.apartmentPrice.setAttribute('min', window.config.OFFERS_CONFIG[window.validator.apartmentType.value].minCost);
   };
 

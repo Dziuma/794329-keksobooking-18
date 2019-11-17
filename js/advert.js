@@ -33,11 +33,11 @@
 
     photosContainer.removeChild(photo);
 
-    for (var i = 0; i < photoLinks.length; i += 1) {
+    Array.from(photoLinks).forEach(function (link) {
       var newPhoto = photo.cloneNode(true);
-      newPhoto.src = photoLinks[i];
+      newPhoto.src = link;
       photosContainer.appendChild(newPhoto);
-    }
+    });
 
     cardClose.addEventListener('click', function () {
       card.remove();
@@ -69,7 +69,7 @@
     }
   };
 
-  window.card = {
+  window.advert = {
     deleteCard: deleteCard,
     renderCard: renderCard
   };

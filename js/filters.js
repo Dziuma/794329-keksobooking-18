@@ -75,7 +75,7 @@
 
     window.pin.removePins();
     window.pin.renderPins(pins);
-    window.card.deleteCard();
+    window.advert.deleteCard();
   });
 
   filters.forEach(function (filter) {

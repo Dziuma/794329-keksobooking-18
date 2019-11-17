@@ -25,21 +25,22 @@
 
   var createPin = function (data) {
     var pin = pinTemplate.cloneNode(true);
-    pin.querySelector('img').src = data.author.avatar;
-    pin.querySelector('img').alt = data.offer.title;
+    var pinImage = pin.querySelector('img');
+    pinImage.src = data.author.avatar;
+    pinImage.alt = data.offer.title;
     pin.style.left = (data.location.x - PIN_HALF_WIDTH) + 'px';
     pin.style.top = (data.location.y - PIN_HEIGHT) + 'px';
 
     pin.addEventListener('click', function () {
-      window.card.deleteCard();
-      window.card.renderCard(data);
+      window.advert.deleteCard();
+      window.advert.renderCard(data);
       addPinActiveClass(pin);
     });
 
     pin.addEventListener('keydown', function (evt) {
       if (evt.keyCode === window.utils.Keycode.ENTER) {
-        window.card.deleteCard();
-        window.card.renderCard(data);
+        window.advert.deleteCard();
+        window.advert.renderCard(data);
         addPinActiveClass(pin);
       }
     });
