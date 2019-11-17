@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PINS_TO_SHOW = window.map.PINS_TO_SHOW;
+  var PINS_TO_SHOW = window.main.PINS_TO_SHOW;
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
   var filterType = document.querySelector('#housing-type');
@@ -56,7 +56,7 @@
     return filteredData;
   };
 
-  var filterChangeHandler = window.data.debounce(function () {
+  var filterChangeHandler = window.utils.debounce(function () {
     var config = {
       type: filterType.value,
       price: filterPrice.value,
@@ -64,18 +64,18 @@
       guests: filterGuests.value,
       features: Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
     };
-    var pinsData = filterPins(window.map.loadedPinsData, config);
+    var pinsData = filterPins(window.main.loadedPinsData, config);
     var pins = [];
 
     pinsData.forEach(function (pinData) {
-      var pin = window.map.createPin(pinData);
+      var pin = window.pin.createPin(pinData);
 
       pins.push(pin);
     });
 
-    window.map.removePins();
-    window.map.renderPins(pins);
-    window.map.deleteCard();
+    window.pin.removePins();
+    window.pin.renderPins(pins);
+    window.advert.deleteCard();
   });
 
   filters.forEach(function (filter) {
