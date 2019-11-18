@@ -101,6 +101,7 @@
     resetPriceField();
     disableMap();
     filtersForm.reset();
+    window.photo.removePreview();
   };
 
   var mainPinMouseDownHandler = function () {
