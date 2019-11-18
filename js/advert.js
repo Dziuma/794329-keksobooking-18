@@ -43,11 +43,14 @@
       card.remove();
     });
 
-    document.addEventListener('keydown', function (keyEvt) {
+    var cardEscPressHandler = function (keyEvt) {
       if (keyEvt.keyCode === window.utils.Keycode.ESC) {
         card.remove();
+        document.removeEventListener('keydown', cardEscPressHandler);
       }
-    });
+    };
+
+    document.addEventListener('keydown', cardEscPressHandler);
 
     return card;
   };
