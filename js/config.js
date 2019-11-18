@@ -29,6 +29,6 @@
   };
 
   window.config = {
-    OFFERS_CONFIG: OFFERS_CONFIG,
+    OFFERS: OFFERS_CONFIG,
   };
 })();

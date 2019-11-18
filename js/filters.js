@@ -68,14 +68,14 @@
     var pins = [];
 
     pinsData.forEach(function (pinData) {
-      var pin = window.pin.createPin(pinData);
+      var pin = window.pin.create(pinData);
 
       pins.push(pin);
     });
 
-    window.pin.removePins();
-    window.pin.renderPins(pins);
-    window.advert.deleteCard();
+    window.pin.remove();
+    window.pin.render(pins);
+    window.card.remove();
   });
 
   filters.forEach(function (filter) {

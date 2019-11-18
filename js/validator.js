@@ -68,8 +68,8 @@
   });
 
   var setMinPrice = function () {
-    apartmentPrice.setAttribute('min', window.config.OFFERS_CONFIG[apartmentType.value].minCost);
-    apartmentPrice.setAttribute('placeholder', window.config.OFFERS_CONFIG[apartmentType.value].minCost);
+    apartmentPrice.setAttribute('min', window.config.OFFERS[apartmentType.value].minCost);
+    apartmentPrice.setAttribute('placeholder', window.config.OFFERS[apartmentType.value].minCost);
   };
 
   setMinPrice();

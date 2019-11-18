@@ -16,7 +16,7 @@
     card.querySelector('.popup__title').textContent = data.offer.title;
     card.querySelector('.popup__text--address').textContent = data.offer.address;
     card.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
-    card.querySelector('.popup__type').textContent = window.config.OFFERS_CONFIG[data.offer.type].name;
+    card.querySelector('.popup__type').textContent = window.config.OFFERS[data.offer.type].name;
     card.querySelector('.popup__text--capacity').textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
     card.querySelector('.popup__text--time').textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
     card.querySelector('.popup__description').textContent = data.offer.description;
@@ -64,7 +64,7 @@
     window.main.map.insertBefore(cardFragment, filtersContainer);
   };
 
-  var deleteCard = function () {
+  var removeCard = function () {
     var card = document.querySelector('.map__card');
 
     if (card) {
@@ -72,8 +72,8 @@
     }
   };
 
-  window.advert = {
-    deleteCard: deleteCard,
-    renderCard: renderCard
+  window.card = {
+    remove: removeCard,
+    render: renderCard
   };
 })();

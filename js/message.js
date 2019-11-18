@@ -50,7 +50,7 @@
   };
 
   window.message = {
-    renderSuccessMessage: renderSuccessMessage,
-    renderErrorMessage: renderErrorMessage
+    renderSuccess: renderSuccessMessage,
+    renderError: renderErrorMessage
   };
 })();

@@ -94,8 +94,8 @@
   };
 
   var deacivatePage = function () {
-    window.pin.removePins();
-    window.advert.deleteCard();
+    window.pin.remove();
+    window.card.remove();
     moveMainPinToStartPosition();
     setAddressField();
     resetPriceField();
@@ -122,25 +122,25 @@
   mainPin.addEventListener('keydown', mainPinEnterPressHandler);
 
   var onError = function (message) {
-    window.message.renderErrorMessage(message);
+    window.message.renderError(message);
   };
 
   var onSuccessLoad = function (pinsData) {
     window.main.loadedPinsData = pinsData;
     pinsData.forEach(function (pinData) {
-      var pin = window.pin.createPin(pinData);
+      var pin = window.pin.create(pinData);
       if (pinsArray.length < PINS_TO_SHOW) {
         pinsArray.push(pin);
       }
     });
-    window.pin.renderPins(pinsArray);
+    window.pin.render(pinsArray);
     enableFilters();
   };
 
   var onSuccessUpload = function () {
     form.reset();
     deacivatePage();
-    window.message.renderSuccessMessage();
+    window.message.renderSuccess();
   };
 
   var moveMainPinToStartPosition = function () {
@@ -150,7 +150,7 @@
 
   var resetPriceField = function () {
     window.validator.apartmentPrice.placeholder = priceStartPlaceholder;
-    window.validator.apartmentPrice.setAttribute('min', window.config.OFFERS_CONFIG[window.validator.apartmentType.value].minCost);
+    window.validator.apartmentPrice.setAttribute('min', window.config.OFFERS[window.validator.apartmentType.value].minCost);
   };
 
   form.addEventListener('submit', function (evt) {

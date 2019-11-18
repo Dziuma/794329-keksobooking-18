@@ -32,15 +32,15 @@
     pin.style.top = (data.location.y - PIN_HEIGHT) + 'px';
 
     pin.addEventListener('click', function () {
-      window.advert.deleteCard();
-      window.advert.renderCard(data);
+      window.card.remove();
+      window.card.render(data);
       addPinActiveClass(pin);
     });
 
     pin.addEventListener('keydown', function (evt) {
       if (evt.keyCode === window.utils.Keycode.ENTER) {
-        window.advert.deleteCard();
-        window.advert.renderCard(data);
+        window.card.remove();
+        window.card.render(data);
         addPinActiveClass(pin);
       }
     });
@@ -64,8 +64,8 @@
   };
 
   window.pin = {
-    createPin: createPin,
-    renderPins: renderPins,
-    removePins: removePins
+    create: createPin,
+    render: renderPins,
+    remove: removePins
   };
 })();
