@@ -79,13 +79,11 @@
       avatarPreview.src = 'img/muffin-grey.svg';
 
       IsLoaded.avatar = false;
-      console.log(IsLoaded.avatar);
     }
     if (IsLoaded.photo) {
       photoPreview.querySelector('img').remove();
 
       IsLoaded.photo = false;
-      console.log(IsLoaded.photo);
     }
   };
 
