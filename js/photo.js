@@ -14,6 +14,7 @@
   var avatarPreview = document.querySelector('.ad-form-header__preview img');
   var photoChooser = document.querySelector('#images');
   var photoPreview = document.querySelector('.ad-form__photo');
+  var photoContainer = document.querySelector('.ad-form__photo-container');
 
   var createImg = function (width, height) {
     var img = document.createElement('img');
@@ -49,10 +50,9 @@
     }
   };
 
-  var loadPhotoPreview = function (file, preview) {
-    var loadedFile = file.files[0];
-
-    if (loadedFile) {
+  var loadPhotoPreview = function (images, preview) {
+    if (images.files.length === 1) {
+      var loadedFile = images.files[0];
       var loadedFileName = loadedFile.name.toLowerCase();
 
       var matches = FILE_TYPES.some(function (fileType) {
@@ -71,6 +71,34 @@
 
         reader.readAsDataURL(loadedFile);
       }
+    } else if (images.files.length > 1) {
+      var photos = Array.from(images.files);
+
+      photoPreview.remove();
+      photos.forEach(function (photo) {
+        var photoName = photo.name.toLowerCase();
+
+        var matche = FILE_TYPES.some(function (fileType) {
+          return photoName.endsWith(fileType);
+        });
+
+        if (matche) {
+          var formPhoto = document.createElement('div');
+          formPhoto.classList.add('ad-form__photo');
+          var newReader = new FileReader();
+
+          newReader.addEventListener('load', function () {
+            var img = createImg(Image.width, Image.height);
+
+            img.src = newReader.result;
+            formPhoto.appendChild(img);
+            photoContainer.appendChild(formPhoto);
+            IsLoaded.photo = true;
+          });
+
+          newReader.readAsDataURL(photo);
+        }
+      });
     }
   };
 
@@ -81,18 +109,32 @@
       IsLoaded.avatar = false;
     }
     if (IsLoaded.photo) {
-      photoPreview.querySelector('img').remove();
+      var photos = document.querySelectorAll('.ad-form__photo');
+      var photosArr = Array.from(photos);
+
+      photosArr.shift();
+
+      photosArr.forEach(function (photo) {
+        photo.remove();
+      });
+      photoContainer.querySelector('.ad-form__photo').querySelector('img').remove();
 
       IsLoaded.photo = false;
     }
   };
 
-  avatarChooser.addEventListener('change', function () {
+  var avatarChooserChangeHandler = function () {
     loadAvatarPreview(avatarChooser, avatarPreview);
-  });
-  photoChooser.addEventListener('change', function () {
+    avatarChooser.removeEventListener('change', avatarChooserChangeHandler);
+  };
+
+  var photoChooserChangeHandler = function () {
     loadPhotoPreview(photoChooser, photoPreview);
-  });
+    photoChooser.removeEventListener('change', photoChooserChangeHandler);
+  };
+
+  avatarChooser.addEventListener('change', avatarChooserChangeHandler);
+  photoChooser.addEventListener('change', photoChooserChangeHandler);
 
   window.photo = {
     removePreview: removePreview
